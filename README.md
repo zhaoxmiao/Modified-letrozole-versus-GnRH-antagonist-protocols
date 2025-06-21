@@ -1,4 +1,3 @@
-tit:
 Modified letrozole versus GnRH antagonist protocols in ovarian aging women for IVF: a multi-center RCT
 
 Background: In women with diminished ovarian reserve (DOR) or advanced maternal age scheduled for IVF, 
