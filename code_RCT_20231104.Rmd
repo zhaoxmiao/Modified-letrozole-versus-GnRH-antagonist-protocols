@@ -1,0 +1,4844 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+
+
+#data clean for RCT data_变量整理
+```{r}
+#基本信息：基线
+#不孕类型：全基线
+#诱导排卵药物：全基线
+#既往病史：全基线
+#手术史：全基线
+#血压监测：全基线
+#其他体格检查：全基线
+#子宫、卵巢初始值：全基线
+#红细胞：基线与V2 胚胎培养及移植-不管V2，看基线就好
+#凝血：基线
+#肝功能：基线与V2 胚胎培养及移植-不管V2，看基线就好
+#甲功：全基线
+#尿常规：全基线
+#激素水平：全基线
+#心电图：全基线
+#是否完成随访：V1 促排#V2 胚胎培养及移植#V3 妊娠情况#V4 第一次冻融胚胎移植
+#Last Vision#V5 第二次冻融胚胎移植
+#促排：coh1,coh2,coh3,coh4,coh5,coh6,coh7,coh8,coh9,coh10,coh11~需要按coh分类。
+#是否取卵：V1 促排
+#是否发生不良事件：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#是否发生sae：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#受精方式：V2 胚胎培养及移植
+#胚胎移植：V2 胚胎培养及移植,V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#是否妊娠：V2 胚胎培养及移植,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#移植后孕囊：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#流产、胎儿、分娩：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#胎儿出生体重：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#内膜准备：V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#移植胚胎准备：V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#儿童随访：Last Vision
+#是否终止：试验总结
+
+#rct 受精方式： V2 胚胎培养及移植
+#取卵记录：可能有多条：以V1促排, coh1, coh2, coh3....表示
+
+
+
+#基本信息：基线       1:16
+#不孕类型：全基线       17:58
+#诱导排卵药物/既往病史/手术史：全基线   59:99
+#血压监测：全基线   100:110
+#其他体格检查：全基线     111:136
+#子宫、卵巢初始值：全基线     137:150
+#红细胞：基线与V2 胚胎培养及移植     151:161  
+#凝血：基线     162:173                    
+#肝功能： 基线与V2 胚胎培养及移植   174:190
+#甲功：全基线      191:196
+#尿常规：全基线    197:214
+#激素水平：全基线  215:238
+#心电图：全基线    239:241
+#是否完成随访：V1 促排#V2 胚胎培养及移植#V3 妊娠情况#V4 第一次冻融胚胎移植#Last Vision#V5 第二次冻融胚胎移植
+#242:247
+#促排：coh1,coh2,coh3,coh4,coh5,coh6,coh7,coh8,coh9,coh10,coh11     248:279
+#是否取卵：V1 促排      280:287
+#是否发生不良事件：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#288:298
+#是否发生sae：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#299:311
+#受精方式&胚胎情况&是否新鲜胚胎移植：V2 胚胎培养及移植
+#312:336
+#胚胎移植：V2 胚胎培养及移植,V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#337:354
+#是否妊娠：V2 胚胎培养及移植,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#355:360
+#移植后孕囊：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#361:380
+#流产、胎儿、分娩：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#381:400
+#胎儿出生体重：V3 妊娠情况,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#401:406
+#内膜准备：V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#407:409
+#移植胚胎准备：V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#410:416
+#儿童随访：Last Vision
+#417:436
+#是否终止：试验总结
+#437:444
+
+
+#基线: 1:241
+#促排详细过程-分开整理： coh 248-279 
+#取卵结果：V1 促排: 280：287
+#受精-新鲜胚胎移植：-V2 胚胎培养及移植：  312：336
+#冷冻胚胎移植情况：-V4，V5：337-347
+#内膜准备方案：V2-V4-V5 及 V3妊娠情况分别对应：348-354   -  V3妊娠情况暂且不考虑
+#新鲜胚胎、冷冻胚胎妊娠情况：-V2, V4, V5：355-360
+#孕囊情况：V3妊娠、V4、V5：361-380
+#母亲并发症、儿童随访：V3、V4、V5：381-406
+
+
+#是否完成随访：V1 促排#V2 胚胎培养及移植#V3 妊娠情况#V4 第一次冻融胚胎移植#V5 第二次冻融胚胎移植#Last Vision
+#242:247
+#是否发生不良事件：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#288:298
+#是否发生sae：V1 促排,V2 胚胎培养及移植,V3 妊娠情况,Last Vision,V4 第一次冻融胚胎移植,V5 第二次冻融胚胎移植
+#299:311
+#儿童随访：Last Vision
+#417:436
+#是否终止：试验总结
+#437:444
+
+
+
+#基线：1：241
+#V1促排：280:287
+#V2胚胎培养及移植:312:336,348:354,355:360
+#V3妊娠情况:361:380,381:406
+#V4冷冻胚胎: 337:347,348:354,355:360,361:380,381:406
+#V5冷冻胚胎: 337:347,348:354,355:360,361:380,381:406
+
+#是否完成随访等判断
+#V1促排：242:247,288:311,
+#V2胚胎培养及移植:242:247,288:311,
+#V3妊娠情况:242:247,288:311,
+#V4冷冻胚胎:242:247,288:311,
+#V5冷冻胚胎:242:247,288:311,
+#Last vision: 242:247,288:311,
+#试验总结:437:444
+
+
+#411-416结果与前完全相同，直接删除，不处理。
+#417-436为儿童随访，不考虑。
+
+
+
+#促排：coh1,coh2,coh3,coh4,coh5,coh6,coh7,coh8,coh9,coh10,coh11     248:279
+#需要先计算D的天数：当天日期-LMP+1
+#再根据天数分组，根据分组计算变化趋势？
+#按雄激素分组？
+#多时间点激素比较
+
+#rctcoh<-subset(rct,event=="coh1" | event=="coh2" | event=="coh3" | event=="coh4" | event=="coh5" | event=="coh6" | event=="coh7" | event=="coh8" | event=="coh9" | event=="coh10" | event=="coh11")
+#rctcoh<-rctcoh[,c(1:2,248:279)]
+#rctcoh$group[rctcoh$group2=="A"]<-"实验组"
+#rctcoh$group[rctcoh$group2=="B"]<-"对照组"
+#View(rctcoh)
+#write.xlsx(rctcoh,"D:Rdata/20230708_rct.xlsx")
+#rctcoh<-read.xlsx("D:/Rdata/20230708_rct.xlsx",sheet="Sheet2")
+#HCG日数据库
+
+
+
+
+library(openxlsx)
+
+#基线与随访匹配结果
+#rct<-read.xlsx("D:/Rdata/20230613_ART.xlsx")
+rct<-read.xlsx("D:/Rdata/20230814_ART.xlsx")
+dim(rct)
+
+
+#rct$tfollic<-as.numeric(rct$tfollic)
+#rct$follic9<-as.numeric(rct$follic9)
+#rct$follic10<-as.numeric(rct$follic10)
+#rct$follic14<-as.numeric(rct$follic14)
+#rct$follic16<-as.numeric(rct$follic16)
+#rct$follic18<-as.numeric(rct$follic18)
+#rct$nl_follic<-as.numeric(rct$nl_follic)
+#rct$nr_follic<-as.numeric(rct$nr_follic)
+#rct$l_ovary<-as.numeric(rct$l_ovary)
+#rct$r_ovary<-as.numeric(rct$r_ovary)
+#rct$ini_thick<-as.numeric(rct$ini_thick)
+#rct$ini_type<-as.numeric(rct$ini_type)
+#rct$uterusd<-as.numeric(rct$uterusd)
+#rct$pelvic<-as.numeric(rct$pelvic)
+#rct$GnRH<-as.numeric(rct$GnRH)
+#rct$GnRHan<-as.numeric(rct$GnRHan)
+#rct$FSHb<-as.numeric(rct$FSHb)
+#rct$LHb<-as.numeric(rct$LHb)
+#rct$HMG<-as.numeric(rct$HMG)
+#rct$HCG<-as.numeric(rct$HCG)
+#rct$FSH2<-as.numeric(rct$FSH2)
+#rct$LH2<-as.numeric(rct$LH2)
+#rct$E2<-as.numeric(rct$E2)
+#rct$P<-as.numeric(rct$P)
+#rct$T<-as.numeric(rct$T)
+
+#随访是否完成
+rct$followup[is.na(rct$data_follow)==FALSE & is.na(rct$followup)==TRUE]<-"是"
+rct$comp16[is.na(rct$followup)==TRUE]<-"Complete"
+
+rct$comp31[is.na(rct$test)==FALSE]<-"Complete"
+rct$comp31[is.na(rct$insepdata16)==FALSE]<-"Complete"
+rct$comp31[is.na(rct$r_etest)==FALSE]<-"Complete"
+
+rct$comp20[is.na(rct$adverse)==FALSE]<-"Complete"
+
+rct$comp21[is.na(rct$sae)==FALSE]<-"Complete"
+
+
+#出生体重-补活产
+rct$livebirth[is.na(rct$birthweight)==FALSE]<-"是"
+
+#生化妊娠_补孕囊
+rct$n_sacs[rct$o_cond2=="生化妊娠" & is.na(rct$n_sacs)==TRUE]<-0
+
+
+#基线信息
+rct0<-subset(rct,event=="基线")
+rct0<-rct0[,1:241]
+
+#促排卵
+rc1<-subset(rct,event=="V1")
+rct1<-rc1[,c(1:2,280:287)]
+rct1a<-rc1[,c(1:2,242:247)]
+rct1b<-rc1[,c(1:2,288:311)]
+
+rc2<-subset(rct,event=="V2")
+rct2<-rc2[,c(1:2,312:336,348:354,355:360)]
+rct2a<-rc2[,c(1:2,242:247)]
+rct2b<-rc2[,c(1:2,288:311)]
+
+rc3<-subset(rct,event=="V3")
+rct3<-rc3[,c(1:2,361:380,381:406)]
+rct3a<-rc3[,c(1:2,242:247)]
+rct3b<-rc3[,c(1:2,288:311)]
+
+rc4<-subset(rct,event=="V4")
+rct4<-rc4[,c(1:2,337:347,348:354,355:360,361:380,381:406)]
+rct4a<-rc4[,c(1:2,242:247)]
+rct4b<-rc4[,c(1:2,288:311)]
+
+rc5<-subset(rct,event=="V5")
+rct5<-rc5[,c(1:2,337:347,348:354,355:360,361:380,381:406)]
+rct5a<-rc5[,c(1:2,242:247)]
+rct5b<-rc5[,c(1:2,288:311)]
+
+rc6<-subset(rct,event=="Last")
+rct6a<-rc6[,c(1:2,242:247)]
+rct6b<-rc6[,c(1:2,288:311)]
+
+rc7<-subset(rct,event=="试验总结")
+rct7<-rc7[,c(1:2,437:444)]
+
+
+
+library(dplyr)
+rcta<-left_join(rct0,rct1,by="id")
+dim(rcta)
+rctb<-left_join(rcta,rct2,by="id")
+dim(rctb)
+rctc<-left_join(rctb,rct3,by="id")
+dim(rctc)
+rctd<-left_join(rctc,rct4,by="id")
+dim(rctd)
+rcte<-left_join(rctd,rct5,by="id")
+dim(rcte)
+
+rctf1<-left_join(rcte,rct1a,by="id")
+rctf2<-left_join(rctf1,rct2a,by="id")
+rctf3<-left_join(rctf2,rct3a,by="id")
+rctf4<-left_join(rctf3,rct4a,by="id")
+rctf5<-left_join(rctf4,rct5a,by="id")
+rctf6<-left_join(rctf5,rct6a,by="id")
+
+rctg1<-left_join(rctf6,rct1b,by="id")
+rctg2<-left_join(rctg1,rct2b,by="id")
+rctg3<-left_join(rctg2,rct3b,by="id")
+rctg4<-left_join(rctg3,rct4b,by="id")
+rctg5<-left_join(rctg4,rct5b,by="id")
+rctg6<-left_join(rctg5,rct6b,by="id")
+
+rcti<-left_join(rctg6,rct7,by="id")
+dim(rcti) #228
+
+#用药浓度与天数  Gn_day  Gn_dose
+library(openxlsx)
+rdrug<-read.xlsx("D:/Rdata/20230814_rct_coh.xlsx",sheet = "Sheet3")
+rctj<-left_join(rcti,rdrug,by="id")  #228
+
+
+##HCG日卵泡数据
+rctcoh<-read.xlsx("D:/Rdata/20230814_rct_coh.xlsx",sheet = "FSH-HMG连续用药计")
+hcg<-subset(rctcoh,rctcoh$HCG>0)
+
+rctk<-left_join(rctj,hcg,by="id")    #228
+
+rcth<-subset(rctk,is.na(education)==FALSE)   #33人缺少数据。
+dim(rcth) #195
+#View(rcth)
+
+
+
+
+
+table(rcth$r_etest)
+
+table(rcth$followup.x)      #不6
+table(rcth$followup.x.x)    #不1
+table(rcth$followup.x.x.x)
+table(rcth$followup.y)
+table(rcth$followup.y.y)
+table(rcth$followup.y.y.y)
+
+table(rcth$r_followup.x)      #患者自愿退出， 其他
+table(rcth$r_followup.x.x)    #其他
+table(rcth$r_followup.x.x.x)
+table(rcth$r_followup.y)
+table(rcth$r_followup.y.y)
+table(rcth$r_followup.y.y.y)
+
+
+#followup有7个不，但只有4个人写了原因
+table(rcth$other4.x)     #患者签署知情同意书后未按时用药，要求退出 1  患者于促排卵治疗5天，第6天未按时添加拮抗剂，退出 2
+table(rcth$other4.x.x)   #不适合新鲜移植（胚胎少）1
+table(rcth$other4.x.x.x)
+table(rcth$other4.y)
+table(rcth$other4.y.y)
+table(rcth$other4.y.y.y)
+
+table(rcth$adverse.x)     #是9 均有理由-应该删除
+table(rcth$adverse.x.x)
+table(rcth$adverse.x.x.x)
+table(rcth$adverse.y)
+table(rcth$adverse.y.y)
+table(rcth$adverse.y.y.y)
+
+table(rcth$sae.x)     
+table(rcth$sae.x.x)
+table(rcth$sae.x.x.x)
+table(rcth$sae.y)    #是 1 但未说明细节
+table(rcth$sae.y.y)
+table(rcth$sae.y.y.y)
+
+
+#etest：无退出，1：退出/违背方案，2：本次取卵周期无可利用胚胎或所有冷冻胚胎移植后均未妊娠
+rcth$etest<-0
+rcth$etest[rcth$r_etest=="患者自愿退出"]<-1
+rcth$etest[rcth$r_etest=="失访"]<-1
+rcth$etest[rcth$r_etest=="违背方案，请详述"]<-1
+rcth$etest[rcth$r_etest=="本次取卵周期无可利用胚胎或所有冷冻胚胎移植后均未妊娠"]<-2   #84
+
+rcth$etest[rcth$other4.x=="患者签署知情同意书后未按时用药，要求退出"]<-1
+rcth$etest[rcth$other4.x=="患者于促排卵治疗5天，第6天未按时添加拮抗剂，退出"]<-1
+rcth$etest[rcth$other4.x.x=="不适合新鲜移植（胚胎少）"]<-2
+
+rcth$etest[rcth$withdraw_adverse.x=="是"]<-1
+rcth$etest[rcth$r_followup.x=="患者自愿退出" | rcth$r_followup.x=="其他" | rcth$r_followup.x.x=="其他" ]<-1
+
+table(rcth$etest)
+
+
+#ovary size 卵巢大小
+rcth$r_ovary_s
+rcth$l_ovary_s
+
+rcth$r_ovary_s[rcth$r_ovary_s=="显示欠清"]<-NA
+rcth$r_ovary_s[rcth$r_ovary_s=="/"]<-NA
+rcth$ro_len<-substr(rcth$r_ovary_s,1,2)
+rcth$ro_len[rcth$ro_len=="未见"]<-NA
+
+rcth$ro_wid<-substr(rcth$r_ovary_s,4,5)
+rcth$ro_wid[rcth$ro_wid=="09" | rcth$ro_wid=="9*"]<-9
+rcth$ro_wid[rcth$ro_wid=="示"]<-NA
+
+rcth$ro_hei<-substr(rcth$r_ovary_s,7,8)
+rcth$ro_hei[rcth$ro_hei=="08"]<-8 
+table(rcth$ro_len)
+table(rcth$ro_wid)
+table(rcth$ro_hei)
+
+
+rcth$l_ovary_s[rcth$l_ovary_s=="显示欠清"]<-NA
+rcth$l_ovary_s[rcth$l_ovary_s=="显示不清"]<-NA
+rcth$lo_len<-substr(rcth$l_ovary_s,1,2)
+rcth$lo_len[rcth$lo_len=="/"]<-NA
+
+rcth$lo_wid<-substr(rcth$l_ovary_s,4,5)
+rcth$lo_wid[rcth$lo_wid=="7*"]<-7
+rcth$lo_wid[rcth$lo_wid=="8*"]<-8
+rcth$lo_hei<-substr(rcth$l_ovary_s,7,8)
+table(rcth$lo_len)
+table(rcth$lo_wid)
+table(rcth$lo_hei)
+
+
+rcth$ro_len<-as.numeric(rcth$ro_len)
+rcth$ro_wid<-as.numeric(rcth$ro_wid)
+rcth$ro_hei<-as.numeric(rcth$ro_hei)
+rcth$lo_len<-as.numeric(rcth$lo_len)
+rcth$lo_wid<-as.numeric(rcth$lo_wid)
+rcth$lo_hei<-as.numeric(rcth$lo_hei)
+
+#转换成数值
+rcth$menarche<-as.numeric(rcth$menarche) #月经初潮年龄
+
+rcth$m_duration<-as.numeric(rcth$m_duration)
+rcth$m_duration[rcth$m_duration==45115]<-7.5
+rcth$m_duration[rcth$m_duration==45061]<-10
+rcth$m_duration[rcth$m_duration=="28-30"]<-29
+rcth$m_duration[rcth$m_duration==45021]<-4.5
+rcth$m_duration[rcth$m_duration==44989]<-3.5
+rcth$m_duration[rcth$m_duration==45053]<-6
+rcth$m_duration[rcth$m_duration==44960]<-2.5
+rcth$m_duration[rcth$m_duration==45084]<-6.5
+rcth$m_duration[rcth$m_duration==44990]<-4
+rcth$m_duration[rcth$m_duration==45052]<-5.5
+rcth$m_duration[rcth$m_duration==45147]<-8.5
+rcth$m_duration[rcth$m_duration==45179]<-9.5
+rcth$m_duration[rcth$m_duration==45137]<-18.5 #7-30
+rcth$m_duration[rcth$m_duration==44988]<-3.5 
+rcth$m_duration[rcth$m_duration==44963]<-4
+rcth$m_duration[rcth$m_duration>18.5]<-NA #部分数据duration很长，但月经规律，估计把间隔时间写成了月经天数。
+table(rcth$m_duration,useNA = "always")
+
+rcth$m_maxday<-as.numeric(rcth$m_maxday)
+rcth$m_minday<-as.numeric(rcth$m_minday)
+rcth$gestationt<-as.numeric(rcth$gestationt)
+rcth$parityt<-as.numeric(rcth$parityt)
+rcth$n_abortt<-as.numeric(rcth$n_abortt)
+rcth$abortt<-as.numeric(rcth$abortt)
+rcth$d_abortt<-as.numeric(rcth$d_abortt)
+rcth$ect_pregt<-as.numeric(rcth$ect_pregt)
+rcth$larbor_mpreg<-as.numeric(rcth$larbor_mpreg)
+rcth$n_deliveryt<-as.numeric(rcth$n_deliveryt)
+rcth$cesareant<-as.numeric(rcth$cesareant)
+rcth$bioc_preg<-as.numeric(rcth$bioc_preg)
+rcth$inferity_year<-as.numeric(rcth$inferity_year)
+rcth$bsbp<-as.numeric(rcth$bsbp)
+rcth$bdbp<-as.numeric(rcth$bdbp)
+rcth$pulse<-as.numeric(rcth$pulse)
+rcth$breathrate<-as.numeric(rcth$breathrate)
+rcth$temperature<-as.numeric(rcth$temperature)
+rcth$height<-as.numeric(rcth$height)
+rcth$weight<-as.numeric(rcth$weight)
+rcth$waistcircum<-as.numeric(rcth$waistcircum)
+rcth$hipcircum<-as.numeric(rcth$hipcircum)
+rcth$dayamens<-as.numeric(rcth$dayamens)
+rcth$uterin_leng<-as.numeric(rcth$uterin_leng)
+rcth$front_diam<-as.numeric(rcth$front_diam)
+rcth$trans_diam<-as.numeric(rcth$trans_diam)
+rcth$endom_thick<-as.numeric(rcth$endom_thick)
+rcth$r_ovary_s<-as.numeric(rcth$r_ovary_s)
+rcth$nl_follic<-as.numeric(rcth$nl_follic)
+rcth$lmax_diam<-as.numeric(rcth$lmax_diam)
+rcth$l_ovary_s<-as.numeric(rcth$l_ovary_s)
+rcth$nr_follic<-as.numeric(rcth$nr_follic)
+rcth$rmax_diam<-as.numeric(rcth$rmax_diam)
+
+rcth$RBC<-as.numeric(rcth$RBC)
+rcth$WBC<-as.numeric(rcth$WBC)
+rcth$platelets<-as.numeric(rcth$platelets)
+rcth$hemoglobin<-as.numeric(rcth$hemoglobin)
+
+rcth$PT<-as.numeric(rcth$PT)
+rcth$fibrin<-as.numeric(rcth$fibrin)
+rcth$PTT<-as.numeric(rcth$PTT)
+rcth$d.diameter<-as.numeric(rcth$d.diameter)
+
+#baseline
+rcth$ALT<-as.numeric(rcth$ALT)
+rcth$AST<-as.numeric(rcth$AST)
+rcth$GTT<-as.numeric(rcth$GTT)
+
+
+#baseline
+rcth$urea<-as.numeric(rcth$urea)
+rcth$creatinine<-as.numeric(rcth$creatinine)
+rcth$glucose<-as.numeric(rcth$glucose)
+rcth$insulin<-as.numeric(rcth$insulin)
+
+
+#baseline
+rcth$thyroid2<-as.numeric(rcth$thyroid2)
+rcth$TSH<-as.numeric(rcth$TSH)
+rcth$uRBC<-as.numeric(rcth$uRBC)
+rcth$uWBC<-as.numeric(rcth$uWBC)
+rcth$uprotein<-as.numeric(rcth$uprotein)
+rcth$uglucose<-as.numeric(rcth$uglucose)
+rcth$ubilogen<-as.numeric(rcth$ubilogen)
+rcth$urinePH<-as.numeric(rcth$urinePH)
+rcth$sex_horm<-as.numeric(rcth$sex_horm)
+rcth$estradiol<-as.numeric(rcth$estradiol)
+rcth$FSH<-as.numeric(rcth$FSH)
+rcth$LH<-as.numeric(rcth$LH)
+rcth$progesterone<-as.numeric(rcth$progesterone)
+rcth$testosterone<-as.numeric(rcth$testosterone)
+rcth$prolactin<-as.numeric(rcth$prolactin)
+rcth$AMH<-as.numeric(rcth$AMH)
+
+
+
+rcth$l_oocyte<-as.numeric(rcth$l_oocyte)
+rcth$r_oocyte<-as.numeric(rcth$r_oocyte)
+rcth$tt_oocyte<-as.numeric(rcth$tt_oocyte)
+rcth$PN2<-as.numeric(rcth$PN2)
+rcth$PN1<-as.numeric(rcth$PN1)
+rcth$PNM<-as.numeric(rcth$PNM)
+rcth$PN0<-as.numeric(rcth$PN0)
+rcth$M2<-as.numeric(rcth$M2)
+rcth$M1<-as.numeric(rcth$M1)
+rcth$GV<-as.numeric(rcth$GV)
+rcth$cleavage<-as.numeric(rcth$cleavage)
+rcth$blastocyst_c<-as.numeric(rcth$blastocyst_c)
+rcth$ava_embryo<-as.numeric(rcth$ava_embryo)
+rcth$hq_embryo<-as.numeric(rcth$hq_embryo)
+rcth$cle_embryo<-as.numeric(rcth$cle_embryo)
+rcth$blastocyst<-as.numeric(rcth$blastocyst)
+rcth$disc_embryo<-as.numeric(rcth$disc_embryo)
+
+
+rcth$trans_num<-as.numeric(rcth$trans_num) #新鲜胚胎移植
+rcth$sco_embryo<-as.numeric(rcth$sco_embryo)
+
+
+#V5 第二次冻融胚胎移植
+#V4 第一次冻融胚胎移植
+rcth$trans_num2.x<-as.numeric(rcth$trans_num2.x)
+rcth$trans_num2.y<-as.numeric(rcth$trans_num2.y)
+table(rcth$trans_num2.x)
+table(rcth$trans_num2.y)
+
+
+rcth$bHCG<-as.numeric(rcth$bHCG)
+rcth$uHCG<-as.numeric(rcth$uHCG)
+rcth$n_sacs<-as.numeric(rcth$n_sacs)
+rcth$size_sacs<-as.numeric(rcth$size_sacs)
+rcth$embryo_bud<-as.numeric(rcth$embryo_bud)
+rcth$embryo_len<-as.numeric(rcth$embryo_len)
+rcth$fheartrate<-as.numeric(rcth$fheartrate)
+rcth$p_sacs2<-as.numeric(rcth$p_sacs2)
+rcth$size_sacs2<-as.numeric(rcth$size_sacs2)
+rcth$embryo_bud2<-as.numeric(rcth$embryo_bud2)
+rcth$embryo_len2<-as.numeric(rcth$embryo_len2)
+rcth$fheartrate2<-as.numeric(rcth$fheartrate2)
+rcth$p_sacs3<-as.numeric(rcth$p_sacs3)
+rcth$size_sacs3<-as.numeric(rcth$size_sacs3)
+rcth$embryo_bud3<-as.numeric(rcth$embryo_bud3)
+rcth$embryo_len3<-as.numeric(rcth$embryo_len3)
+rcth$fheartrate3<-as.numeric(rcth$fheartrate3)
+rcth$birthweight<-as.numeric(rcth$birthweight)
+rcth$birthlen<-as.numeric(rcth$birthlen)
+
+
+
+#受精方式
+#受精方式 (choice=IVF)	IVF
+#受精方式 (choice=ICSI)	ICSI
+#受精方式 (choice=IVF+ICSI)	IVF_ICSI
+#2PN（个）	PN2
+#1PN（个）	PN1
+#多PN（个）	PNM
+#0PN（个）	PN0
+#MII（个）	M2
+#MI（个）	M1
+#GV（个）	GV
+#卵裂数（个）	cleavage
+#囊胚培养数（个）	blastocyst_c
+#可利用胚胎（个）	ava_embryo
+#优质胚胎数（个）	hq_embryo
+#卵裂胚数（个）	cle_embryo
+#囊胚数（个）	blastocyst
+
+table(rcth$IVF)
+table(rcth$ICSI)
+table(rcth$IVF_ICSI)
+summary(rcth$PN2)
+summary(rcth$PN1)
+summary(rcth$PNM)
+summary(rcth$PN0)
+summary(rcth$M2)
+summary(rcth$M1)
+summary(rcth$GV)
+summary(rcth$cleavage)
+summary(rcth$blastocyst_c)
+summary(rcth$ava_embryo)
+summary(rcth$hq_embryo)
+summary(rcth$cle_embryo)
+summary(rcth$blastocyst)
+
+
+#囊胚数量
+#新鲜胚胎移植囊胚数量：
+table(rcth$n_sacs.x)  
+rcth$n_sacs.x[rcth$n_sacs.x=="宫内外均未见孕囊"]<-0  #0:4; 1:33; 2:4;
+
+#冷冻胚胎移植囊胚数量
+#第一次冷冻
+table(rcth$n_sacs.y)
+rcth$n_sacs.y[rcth$n_sacs.y=="宫内"]<-1  #0:1; 1:13; 2:1
+#第二次冷冻
+table(rcth$n_sacs)  #1:3
+
+#是否妊娠	pregnancy
+table(rcth$pregnancy.x)  #是：43，否：56
+table(rcth$pregnancy.y)  #是：18，否：25
+table(rcth$pregnancy)  #是：3，否：3
+
+#根据囊胚 补 妊娠
+rcth$pregnancy.x[rcth$n_sacs.x>=0]<-"是"  #是：44，否：56
+rcth$pregnancy.y[rcth$n_sacs.y>=0]<-"是"
+rcth$pregnancy[rcth$n_sacs>=0]<-"是"
+
+#临床妊娠
+#新鲜胚胎临床妊娠人数/次数
+rcth$pregn[rcth$pregnancy.x=="是" & rcth$n_sacs.x>0]<-"是"
+table(rcth$pregn)
+#冷冻胚胎临床妊娠
+rcth$fpregn1[rcth$pregnancy.y=="是" & rcth$n_sacs.y>0]<-"是"
+rcth$fpregn2[rcth$pregnancy=="是" & rcth$n_sacs>0]<-"是"
+table(rcth$fpregn1)
+table(rcth$fpregn2)
+
+
+#冷冻胚胎临床妊娠
+rcth$fpregn[rcth$fpregn1=="是" | rcth$fpregn2=="是"]<-"冷冻胚胎临床妊娠人数"
+table(rcth$fpregn)
+
+#冷冻胚胎临床妊娠次数
+rcth$fpregnt[rcth$fpregn1=="是" | rcth$fpregn2=="是"]<-"冷冻胚胎临床妊娠1次"
+rcth$fpregnt[rcth$fpregn1=="是" & rcth$fpregn2=="是"]<-"冷冻胚胎临床妊娠2次"
+table(rcth$fpregnt)
+
+
+#根据妊娠 补 是否移植
+#新鲜胚胎移植
+table(rcth$fre_embryo)
+#冷冻胚胎移植
+table(rcth$embryo_trans.x)
+table(rcth$embryo_trans.y)
+
+rcth$fre_embryo[is.na(rcth$pregnancy.x)==FALSE]<-"是"
+rcth$embryo_trans.x[is.na(rcth$pregnancy.y)==FALSE]<-"是"
+rcth$embryo_trans.y[is.na(rcth$pregnancy)==FALSE]<-"是"
+rcth$fre_embryo[rcth$r_embryo=="卵泡已排，取消取卵" | rcth$r_embryo=="未获卵"]<-NA
+
+
+#新鲜移植胚胎种类	trans_type
+table(rcth$trans_type)    #很多没有选。不知道是系统问题还是录入问题。
+#新鲜移植胚胎数目（个）	trans_num
+table(rcth$trans_num)
+#冷冻胚胎移植
+table(rcth$embryo_trans.x)
+table(rcth$embryo_trans.y)
+#移植胚胎种类	trans_type
+table(rcth$trans_type2.x)
+table(rcth$trans_type2.y)
+#移植胚胎数目（个）	trans_num
+table(rcth$trans_num2.x)
+table(rcth$trans_num2.y)
+
+
+#根据是否移植 补 取卵
+rcth$t_oocyte[rcth$fre_embryo=="是" | rcth$embryo_trans.x=="是" | rcth$embryo_trans.y=="是"]<-"是"
+#根据总获卵数 补 取卵
+rcth$t_oocyte[is.na(rcth$tt_oocyte)==FALSE]<-"是"
+
+
+#是否取卵成功
+rcth$tocys[rcth$tt_oocyte>0]<-1
+
+
+#取卵日期	d_oocyte
+#左侧取卵数（个）	l_oocyte
+#右侧取卵数（个）	r_oocyte
+#总获卵数（个） 	tt_oocyte
+summary(rcth$l_oocyte)
+summary(rcth$r_oocyte)
+summary(rcth$tt_oocyte)
+
+
+
+
+#中心名称
+rcth$centera<-NA
+rcth$centera[rcth$center=="东莞市人民医院"]<-"dg"
+rcth$centera[rcth$center=="广东省人民医院"]<-"gdp"
+rcth$centera[rcth$center=="广东省中医院"]<-"gdz"
+rcth$centera[rcth$center=="贵州医科大学附属医学"]<-"gzh"
+rcth$centera[rcth$center=="贵州医科大学附属医院"]<-"gzh"
+rcth$centera[rcth$center=="深圳市妇幼"]<-"sz"
+rcth$centera[rcth$center=="深圳市妇幼保健院"]<-"sz"
+rcth$centera[rcth$center=="孙逸仙纪念医院"]<-"syh2"
+rcth$centera[rcth$center=="中山大学孙逸仙纪念医院"]<-"syh2"
+rcth$centera[rcth$center=="浙江省人民医院"]<-"zj"
+table(rcth$centera)
+
+
+#分组定义
+rcth$groupa<-NA
+rcth$groupa[rcth$group=="对照组"]<-"control"
+rcth$groupa[rcth$group=="实验组"]<-"expri"
+table(rcth$groupa)
+
+
+#年龄
+summary(rcth$age)
+rcth$agei<-rcth$age
+rcth$agei[is.na(rcth$age)==TRUE & is.na(rcth$education)==FALSE]<-mean(rcth$age)
+summary(rcth$agei)
+
+
+#BMI~height/weight^2 no height/weight~BMI 179
+summary(rcth$height)
+summary(rcth$weight)
+rcth$BMI<-NA
+rcth$BMI<-(rcth$weight)/((rcth$height/100)^2)
+summary(as.numeric(rcth$BMI))  #22.967
+rcth$BMI[is.na(rcth$BMI)==TRUE]<-22.967
+summary(rcth$BMI)
+
+
+#不孕年限 Duration of infertility
+summary(rcth$inferity_year) #0.5-22.0
+
+
+#不孕类型_原发性不孕、继发性不孕
+#四个缺失值，根据孕次补全原发与继发是否可以？
+#其中有三个，妊娠过1，1，2次的被选择为了原发性是不是不对？
+table(rcth$inferity_type,useNA = "always")
+rcth$inferityt<-rcth$inferity_type
+rcth$inferityt[rcth$gestationt==0 & is.na(rcth$inferity_type)==TRUE]<-"原发性不孕"
+rcth$inferityt[rcth$gestationt>0 & is.na(rcth$inferity_type)==TRUE]<-"继发性不孕"
+table(rcth$inferityt,useNA = "always")
+
+table(osyt$inferity_type,useNA = "always")
+osyt$inferityt<-osyt$inferity_type
+osyt$inferityt[osyt$gestationt==0 & is.na(osyt$inferity_type)==TRUE]<-"原发性不孕"
+osyt$inferityt[osyt$gestationt>0 & is.na(osyt$inferity_type)==TRUE]<-"继发性不孕"
+table(osyt$inferityt,useNA = "always")
+
+#不孕类型_老年/卵巢储备功能下降
+rcth$inferity<-NA
+rcth$inferity[rcth$agei>=40]<-"Old"
+rcth$inferity[rcth$agei<40]<-"Diminished ovarian reserve"
+table(rcth$inferity)
+
+#不孕类型__详细类型
+#多个原因怎么说？
+#不孕诊断 (choice=排卵障碍)	i_ovulation
+#不孕诊断 (choice=盆腔输卵管因素)	i_tube
+#不孕诊断 (choice=子宫内膜异位症)	i_endom
+#不孕诊断 (choice=男方因素)	i_male
+#不孕诊断 (choice=多因素)	i_multiple
+#不孕诊断 (choice=不明原因不孕)	i_infertility
+#不孕诊断 (choice=卵巢低储备)	i_lovarian
+#不孕诊断 (choice=高龄)	i_oldage
+#不孕诊断 (choice=其他，请说明)	i_other
+
+table(rcth$i_ovulation)    #2
+table(rcth$i_tube)         #105
+table(rcth$i_endom)        #4
+table(rcth$i_male)         #31
+table(rcth$i_multiple)     #11
+table(rcth$i_infertility)  #2 不明原因
+table(rcth$i_lovarian)     #145
+table(rcth$i_oldage)       #60
+table(rcth$i_other)        #20
+
+
+#手术疾病史
+table(rcth$ovarian_removal)  #卵巢肿瘤剔除 6
+
+#复发性流产  #自然流产>=2次   12
+rcth$rabort<-0
+rcth$rabort[rcth$n_abortt>=2]<-1
+table(rcth$rabort)
+
+#子宫内膜异位症病史
+table(rcth$i_endom)
+rcth$endom<-"否"
+rcth$endom[rcth$i_endom=="选中"]<-"是"
+rcth$endom[rcth$endom_surg=="选中"]<-"是"
+rcth$endom[rcth$infer_diag=="子宫内膜异位症，卵巢低储备，左侧输卵管通而欠畅"]<-"是"
+rcth$endom[rcth$d_laparoscope=="2020年右侧输卵管结扎+输卵管通液+肠粘连松解+盆腔粘连松解+子宫内膜异位症烧灼"]<-"是"
+rcth$endom[rcth$d_laparoscope=="2019-11-6腹腔镜下左侧输卵管部分切除+双侧输卵管结扎+子宫内膜异位病灶电灼术"]<-"是"
+table(rcth$endom)
+
+#甲状腺炎-没有定义
+#thyroid_dis: 是否患有甲状腺疾病
+table(rcth$thyroid_dis)
+
+#基线卵泡数 右#窦卵泡数	nl_follic  
+#左 窦卵泡数	nr_follic  
+rcth$nl_follic[rcth$nl_follic==44928]<-1.5
+rcth$nl_follic[rcth$nl_follic==44989]<-3.5
+rcth$nl_follic[rcth$nl_follic==45052]<-5.5
+rcth$nl_follic[rcth$nl_follic==45021]<-4.5
+
+rcth$nr_follic[rcth$nr_follic==45021]<-4.5
+rcth$nr_follic[rcth$nr_follic==44928]<-1.5
+
+summary(rcth$nl_follic)
+summary(rcth$nr_follic)
+
+#窦卵泡总数
+rcth$AFC<-rcth$nl_follic+rcth$nr_follic
+table(is.na(rcth$AFC))  #11个缺失值
+
+
+#基线性激素
+rcth$estradiol<-as.numeric(rcth$estradiol)
+rcth$FSH<-as.numeric(rcth$FSH)
+rcth$LH<-as.numeric(rcth$LH)
+rcth$progesterone<-as.numeric(rcth$progesterone)
+rcth$testosterone<-as.numeric(rcth$testosterone)
+rcth$prolactin<-as.numeric(rcth$prolactin)
+rcth$AMH<-as.numeric(rcth$AMH)
+
+
+table(rcth$unit_FSH)      #IU/L   mIU/ml  #单位一样
+table(rcth$unit_LH)       #IU/L   mIU/ml  #单位一样
+table(rcth$unit_AMH)      #ng/L   ng/ml, ng/L太少了，应该没有问题。
+
+#雌二醇
+table(rcth$unit_estr)     #pg/ml  pmol/L  #1pmol/l=3.67pg/ml
+#estradiol——pmol/L   #1pmol/l=3.67pg/ml
+rcth$estr<-ifelse(rcth$unit_estr=="pg.ml",rcth$estradiol,3.67*rcth$estradiol)
+summary(rcth$estradiol)
+summary(as.numeric(rcth$estr))
+
+#孕酮
+table(rcth$unit_prog)     #nmol/L μg/L
+#prog -nmol/L   nmol/L=ug/L*3.18
+rcth$prog[rcth$progesterone=="未测" | rcth$progesterone=="未查"]<-NA
+rcth$prog<-ifelse(rcth$unit_prog=="nmol/L",rcth$progesterone,3.18*rcth$progesterone)
+summary(rcth$prog)
+
+#睾酮
+table(rcth$unit_testos)   #ng/ml  nmol/L  #nmol/L=3.4*ng/mL
+##ng/ml  nmol/L  #nmol/L=3.4*ng/mL
+rcth$testos<-ifelse(rcth$unit_testos=="nmol/L",rcth$testosterone,3.4*rcth$testosterone)
+summary(rcth$testosterone)
+summary(rcth$testos)
+
+#催乳素
+table(rcth$unit_prol)     #ng/L   ng/ml   uIU/ml μg/L  #prol   mIU/L = 21.2*ng/mL #需要转换
+rcth$prol<-ifelse(rcth$unit_prol=="uIU/ml",rcth$prolactin,21.2*rcth$prolactin)
+summary(rcth$prolactin)
+summary(as.numeric(rcth$prol))
+
+
+#数据初步看
+summary(rcth$estr)  #195-9
+summary(rcth$FSH) ##195-5
+summary(rcth$LH)  #195-3
+summary(rcth$prog) #195-19
+summary(rcth$testos) #195-12
+summary(rcth$prol) #195-13
+summary(rcth$AMH)  ##195-6
+
+
+#TSH
+table(rcth$unit_TSH)  #mU/L 184  无 2
+summary(rcth$TSH)
+
+
+#fasting glucose  NA:13
+summary(rcth$glucose)
+
+
+#fasting insulin  NA:58
+summary(rcth$insulin)
+
+
+
+#IVF种类 21  138  1
+table(rcth$IVF)
+table(rcth$IVF_ICSI)
+table(rcth$ICSI)
+rcth$ivfm[rcth$IVF=="选中"]<-"IVF"
+rcth$ivfm[rcth$ICSI=="选中"]<-"ICSI"
+rcth$ivfm[rcth$IVF_ICSI=="选中"]<-"IVF_ICSI"
+table(rcth$ivfm)
+
+#内膜厚度  ini_thick
+rcth$ini_thick<-as.numeric(rcth$ini_thick)
+summary(rcth$ini_thick)
+
+#Number of follicles≥18mm, mean (SD)
+rcth$follic18<-as.numeric(rcth$follic18)
+summary(rcth$follic18)
+
+
+#是否取卵
+table(rcth$t_oocyte)
+
+#卵泡已排
+table(rcth$r_noocyte)
+rcth$eoocyte[rcth$r_noocyte=="OPU术前大卵泡已排" | rcth$r_noocyte=="卵泡已排"]<-"已排卵"
+rcth$eoocyte[rcth$r_noocyte=="已排卵" | rcth$r_noocyte=="已提早排卵"]<-"已排卵"
+rcth$eoocyte[rcth$r_embryo=="卵泡已排，取消取卵" & is.na(rcth$tt_oocyte)==TRUE]<-"已排卵"
+table(rcth$eoocyte)
+
+
+#是否成功取卵
+rcth$tocys[rcth$tt_oocyte>0]<-"成功取卵"
+
+
+#获卵数  NA:11
+summary(rcth$tt_oocyte)
+
+
+#MII oocytes retrieved, mean (SD) 
+#M2
+table(rcth$M2)
+#MII oocytes retrieved rate, (%)
+rcth$M2rate<-rcth$M2/(rcth$M1+rcth$M2+rcth$GV)
+summary(rcth$M2rate)
+
+#Follicle output rate (%)= 获得的卵子/窦卵泡数
+rcth$folrate<-rcth$tt_oocyte/rcth$AFC
+summary(rcth$folrate)
+
+
+#Number of available embryos, mean (SD)
+#Number of high-quality embryos, mean (SD)
+#Number of cleaved embryos, mean (SD)
+#Number of blastocyst, mean (SD)
+#可利用胚胎数：ava_embryo	
+#高质量胚胎数：hq_embryo
+#卵裂胚数：cle_embryo
+#囊胚数：blastocyst
+summary(rcth$ava_embryo)
+summary(rcth$hq_embryo)
+summary(rcth$cle_embryo)
+summary(rcth$blastocyst)
+
+#囊胚形成率
+rcth$blastr<-rcth$blastocyst/rcth$ava_embryo
+
+#可利用胚胎率
+rcth$avaer<-rcth$ava_embryo/(rcth$ava_embryo+rcth$disc_embryo)
+
+#优质胚胎率
+rcth$highqer<-rcth$hq_embryo/rcth$ava_embryo
+
+summary(rcth$blastr)
+summary(rcth$avaer)
+summary(rcth$highqer)
+
+#周期取消率  eoocyte/t_oocyte
+summary(rcth$eoocyte)
+
+
+#进行胚胎移植人数
+rcth$embryo[rcth$fre_embryo=="是" | rcth$embryo_trans.x=="是" |  rcth$embryo_trans.y=="是"]<-"胚胎移植人数"
+table(rcth$fre_embryo)
+table(rcth$embryo_trans.x)
+table(rcth$embryo_trans.y)
+
+
+#胚胎移植次数-可以不现在算，后面会算
+#方案一、fre_embryo, embryo_trans.x, embryo_trans.y_算和。
+#方案二、tembryo计算
+rcth$tembryo<-paste0(rcth$fre_embryo,rcth$embryo_trans.x,rcth$embryo_trans.y)
+table(rcth$tembryo)
+
+
+#胚胎转运__转运类型__胚胎移植数目
+#新鲜移植胚胎种类	trans_type
+table(rcth$trans_type)    #很多没有选。不知道是系统问题还是录入问题。
+#新鲜移植胚胎数目（个）	trans_num
+table(rcth$trans_num)
+#冷冻胚胎移植
+table(rcth$embryo_trans.x)
+table(rcth$embryo_trans.y)
+#移植胚胎种类	trans_type
+table(rcth$trans_type2.x)
+table(rcth$trans_type2.y)
+#移植胚胎数目（个）	trans_num
+table(rcth$trans_num2.x)
+table(rcth$trans_num2.y)
+
+
+#Embryo implantation rate of fresh transplantation, No. (%)
+#Embryo implantation rate of freezed transplantation, No. (%)
+#Number of patients who did not undergo embryo transfer, No. (%)
+
+
+#未进行新鲜胚胎移植
+#未获得可用胚胎
+table(rcth$ava_embryo)
+rcth$noavae[rcth$fre_embryo=="不"]<-0
+rcth$noavae[rcth$ava_embryo==0]<-1
+rcth$noavae[rcth$r_embryo=="D3和D5均无可利用胚胎" | rcth$r_embryo=="无可利用胚胎"]<-1
+rcth$noavae[rcth$r_embryo=="无可用胚胎" | rcth$r_embryo=="无可移植胚胎"]<-1
+table(rcth$noavae)
+
+
+#个人原因
+table(rcth$r_embryo)
+rcth$persr[rcth$fre_embryo=="不"]<-0
+rcth$persr[rcth$r_embryo=="P升高"]<-1
+rcth$persr[rcth$r_embryo=="扳机日子宫内膜＜6mm"]<-1
+rcth$persr[rcth$r_embryo=="个人因素"]<-1
+rcth$persr[rcth$r_embryo=="患者意愿+内膜薄"]<-1
+rcth$persr[rcth$r_embryo=="积攒胚胎"]<-1
+rcth$persr[rcth$r_embryo=="卵巢过度刺激风险"]<-1
+rcth$persr[rcth$r_embryo=="卵巢过度刺激风险"]<-1
+rcth$persr[rcth$r_embryo=="内膜薄"]<-1
+rcth$persr[rcth$r_embryo=="内膜因素"]<-1
+rcth$persr[rcth$r_embryo=="取卵少，累积胚胎"]<-1
+rcth$persr[rcth$r_embryo=="输卵管积水"]<-1
+rcth$persr[rcth$r_embryo=="阴道出血"]<-1
+rcth$persr[rcth$r_embryo=="子宫内膜薄"]<-1
+rcth$persr[rcth$r_embryo=="子宫内膜息肉"]<-1
+rcth$persr[rcth$r_embryo=="子宫内膜形态异常"]<-1
+table(rcth$persr)
+
+
+#获卵后自然妊娠  无
+#临床妊娠
+#新鲜胚胎移植临床妊娠
+table(rcth$pregn)
+
+
+#冷冻胚胎移植妊娠
+table(rcth$fpregn1)
+table(rcth$fpregn2)
+
+#新鲜胚胎移植次数/人数
+rcth$frepreg[rcth$pregn=="是"]<-"新鲜胚胎移植次数/人数"
+
+#冷冻胚胎移植妊娠次数
+rcth$frzpreg[rcth$fpregn1=="是" | rcth$fpregn2=="是"]<-"冷冻胚胎移植妊娠1次"
+rcth$frzpreg[rcth$fpregn1=="是" & rcth$fpregn2=="是"]<-"冷冻胚胎移植妊娠2次"
+table(rcth$frzpreg)
+
+
+#临床妊娠次数
+#方案一、pregnancy.x, pregnancy.y, pregnancy_算和。
+#方案二、tpreg 计算
+rcth$tpreg<-paste0(rcth$pregn,rcth$fpregn1,rcth$fpregn2)
+table(rcth$tpreg)
+
+
+#孕囊个数
+#新鲜胚胎移植孕囊个数
+table(rcth$n_sacs.x)
+
+
+#冷冻胚胎移植孕囊个数
+table(rcth$n_sacs.y)
+table(rcth$n_sacs)
+
+
+#自然流产——早期
+table(rcth$eabortion.x)
+table(rcth$eabortion.y)
+table(rcth$eabortion)
+#早期流产次数
+rcth$eabort<-paste0(rcth$eabortion.x,rcth$eabortion.y,rcth$eabortion)
+table(rcth$eabort)
+
+
+#自然流产——中期
+table(rcth$mabortion.x)
+table(rcth$mabortion.y) #1是
+table(rcth$mabortion)
+rcth$mabort<-paste0(rcth$mabortion.x,rcth$mabortion.y,rcth$mabortion)
+table(rcth$mabort)
+
+
+#活产
+table(rcth$livebirth.x)
+table(rcth$livebirth.y)
+table(rcth$livebirth)
+#活产人数
+rcth$liveb[rcth$livebirth.x=="是" | rcth$livebirth.y=="是" | rcth$livebirth=="是"]<-"活产"
+table(rcth$liveb)
+
+
+#出生体重 
+table(rcth$birthweight.x)
+table(rcth$birthweight.y)
+table(rcth$birthweight)
+rcth$birthw[is.na(rcth$birthweight.x)==FALSE]<-rcth$birthweight.x
+rcth$birthw[is.na(rcth$birthweight.y)==FALSE]<-rcth$birthweight.y
+rcth$birthw[is.na(rcth$birthweight)==FALSE]<-rcth$birthweight
+
+rcth$birthw<-ifelse(is.na(rcth$birthweight.x)==FALSE,rcth$birthweight.x,
+                    ifelse(is.na(rcth$birthweight.y)==FALSE,rcth$birthweight.y,rcth$birthweight))
+table(rcth$birthw)
+
+
+#是否FET
+table(rcth$IVFET)
+
+#write.xlsx(rcth,"D:/Rdata/20230724_rct_data.xlsx")
+#write.xlsx(rcth,"D:/Rdata/20230814_rct_data.xlsx")
+
+```
+
+
+#补充数据与原导出数据合并代码202309
+```{r}
+library(openxlsx)
+rcto<-read.xlsx("D:/Rdata/20230814_rct_data.xlsx",sheet = "总数据中无补充变量名")
+rcts<-read.xlsx("D:/Rdata/20230814_rct_data.xlsx",sheet = "补充数据")
+
+dim(rcto) #220——相比于补充数据，多的两人为广东省中医院人员，但只有取卵信息，无妊娠相关结果
+dim(rcts) #218
+
+library(dplyr)
+rctz<-left_join(rcto,rcts,by="id")
+write.xlsx(rctz,"D:/Rdata/20230914_rct.xlsx")
+dim(rctz)
+
+#变量名与表格所需要信息一一对应关系如下：
+#Age, Mean(SD), years
+summary(rctz$age)
+rctz$agei<-rctz$age
+rctz$agei[is.na(rctz$age)==TRUE]<-36.92
+summary(rctz$agei)
+
+
+#Body mass index, mean (SD)
+summary(rctz$BMI)
+
+
+#Cycle  #缺失5
+summary(rctz$cycle)
+
+
+#Duration of infertility, mean (SD), years（median (IQR)）
+summary(rctz$inferity_year)
+
+
+#Primary infertile (%)
+  #Diminished ovarian reserve
+  #41-45 years
+table(rctz$inferity,useNA = "always")
+
+
+#Antral follicle count in both ovaries, mean (SD) #缺26
+summary(rctz$AFC)
+
+
+#Baseline sex hormone, mean (SD)
+#    FSH,IU/L
+#    LH,IU/L
+#    Estradiol,pmol/L
+#    Testosterone,nmol/L
+#    Progesterone,nmol/L
+#    AMH,ng/mL
+#    PRL
+#    TSH
+#    Fasting Glucose
+#    Fasting insulin
+#    IVF
+#    ICSI
+#    IVF_ICSI
+#estr	prog	testos	prol	ivfm
+
+
+#数据初步看
+summary(rctz$FSH)    #221-5
+summary(rctz$LH)     #221-3
+summary(rctz$estr)   #221-9
+summary(rctz$testos) #221-14
+summary(rctz$prog)   #221-23
+summary(rctz$AMH)    #221-7
+summary(rctz$prol)   #221-16
+#TSH
+summary(rctz$TSH)    #221-11
+#fasting glucose  NA:13
+summary(rctz$glucose)
+
+
+
+#Show in New Window
+
+#fasting insulin  NA:58
+summary(rctz$insulin)
+
+
+#IVF种类 23,158,2
+table(rctz$IVF)
+table(rctz$IVF_ICSI)
+table(rctz$ICSI)
+rctz$ivfm[rctz$IVF=="选中"]<-"IVF"
+rctz$ivfm[rctz$ICSI=="选中"]<-"ICSI"
+rctz$ivfm[rctz$IVF_ICSI=="选中"]<-"IVF_ICSI"
+table(rctz$ivfm,useNA = "always")
+
+#病史人太少
+#卵巢囊肿剔除术的病史
+#复发性流产病史
+#子宫内膜异位症病史
+#甲状腺炎
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数 #缺失2人
+summary(rctz$Gn_day)
+
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物 #缺失2人
+summary(rctz$Gn_dose)
+
+#Number of follicles≥18mm, mean (SD)
+summary(rctz$follic18)   #缺失93人
+
+#Number of oocytes retrieved, mean (SD)
+summary(rctz$tt_oocyte)   #缺失13人 
+
+#MII oocytes retrieved, mean (SD)
+summary(rctz$M2)          #缺失22人 
+
+#MII oocytes retrieved rate, No. (%)
+#MII oocytes retrieved rate, (%)
+rctz$M1[is.na(rctz$M1)==TRUE]<-0
+rctz$M2[is.na(rctz$M2)==TRUE]<-0
+rctz$GV[is.na(rctz$GV)==TRUE]<-0
+rctz$M2rate<-rctz$M2/(rctz$M1+rctz$M2+rctz$GV)*100
+summary(rctz$M2rate)      #缺失64人(分母为0 38人)
+
+#Follicle output rate (%)= 获得的卵子/窦卵泡数
+rctz$folrate<-rctz$tt_oocyte/rctz$AFC*100
+summary(rctz$folrate)
+
+#Endometrial thickness (mm)_Gn当天  #缺失23人
+summary(rctz$ini_thick)
+
+#Number of available embryos, mean (SD)  #缺失24人
+summary(rctz$ava_embryo)
+
+#Number of high-quality embryos, mean (SD)  #缺失23人
+summary(rctz$hq_embryo)
+
+#Number of cleaved embryos, mean (SD)  #缺失23人
+summary(rctz$cle_embryo)
+
+#Number of blastocyst, mean (SD)  #缺失26人
+summary(rctz$blastocyst)
+
+#Blastocyst formation rate, No. (%)
+rctz$blastrate<-rctz$blastocyst/rctz$blastocyst_c*100
+rctz$blastrate[rctz$blastrate=="Inf"]<-NA
+summary(rctz$blastrate)
+
+#Available embryos rate, No. (%)
+rctz$ava_embryoo<-rctz$ava_embryo
+rctz$ava_embryoo[is.na(rctz$ava_embryo)==TRUE]<-0
+rctz$disc_embryoo<-rctz$disc_embryo
+rctz$disc_embryoo[is.na(rctz$disc_embryo)==TRUE]<-0
+rctz$avaerate<-rctz$ava_embryo/(rctz$ava_embryoo+rctz$disc_embryoo)*100
+summary(rctz$avaerate)
+
+#High-quality embryos rate, No. (%)
+rctz$hqerate<-rctz$hq_embryo/rctz$ava_embryo*100
+rctz$hqerate[rctz$hqerate=="Inf"]<-NA
+summary(rctz$hqerate)
+
+#周期取消率
+#取消取卵
+table(rctz$t_oocyte,useNA = "always")     #不、否 为取消取卵
+#取卵数
+table(rctz$tt_oocyte,useNA = "always")    #11个NA=8个取消移植+3个取卵缺失
+
+#成功取卵
+rctz$tocys<-NA
+rctz$tocys[rctz$tt_oocyte>0]<-"成功取卵"
+rctz$tocys[rctz$tt_oocyte==0]<-"未取到卵"
+rctz$tocys[rctz$t_oocyte=="不" | rctz$t_oocyte=="否"]<-"取消取卵"
+table(rctz$tocys,useNA = "always")
+
+
+#取消移植_在成功取卵的人里看没有移植的
+#Number of patients who did not undergo embryo transfer, No. (%)
+#    No embryo obtained/提早排卵
+#    Personal issue
+#    Natural conception after oocyte retrieval
+rctz$fre_embryo[rctz$tocys=="取消取卵" | rctz$tocys=="未取到卵"]<-NA
+table(rctz$fre_embryo,useNA = "always")  
+
+
+#未进行新鲜胚胎移植
+#有一题存在逻辑问题改一下
+rctz$r_embryo[rctz$r_noocyte=="无优势卵泡"]<-"取消取卵"
+#未取卵成功
+table(rctz$r_embryo,useNA = "always")
+rctz$nocyte<-NA
+rctz$nocyte[rctz$r_embryo=="未获卵" | rctz$r_embryo=="未取到卵"]<-1
+rctz$nocyte[rctz$tt_oocyte==0]<-1
+#未获得可用胚胎
+table(rctz$ava_embryo)
+rctz$noavae[rctz$fre_embryo=="不"]<-0
+rctz$noavae[rctz$fre_embryo=="否"]<-0
+rctz$noavae[rctz$ava_embryo==0]<-1
+rctz$noavae[rctz$r_embryo=="D3和D5均无可利用胚胎" | rctz$r_embryo=="无可利用胚胎"]<-1
+rctz$noavae[rctz$r_embryo=="无可用胚胎" | rctz$r_embryo=="无可移植胚胎"]<-1
+rctz$noavae[rctz$r_embryo=="无可用移植胚胎"]<-1
+#珍贵胚胎
+rctz$valembryo<-0
+rctz$valembryo[rctz$r_embryo=="珍贵胚胎"]<-1
+rctz$valembryo[rctz$r_embryo=="单个胚胎，数量少"]<-1
+#个人原因
+table(rctz$r_embryo,useNA = "always")
+rctz$persr[rctz$r_embryo=="PGT-A积攒胚胎"]<-1
+rctz$persr[rctz$r_embryo=="扳机日子宫内膜＜6mm"]<-1
+rctz$persr[rctz$r_embryo=="穿刺针过内膜"]<-1
+rctz$persr[rctz$r_embryo=="个人因素"]<-1
+rctz$persr[rctz$r_embryo=="个人疾病"]<-1
+rctz$persr[rctz$r_embryo=="宫腔因素，内膜薄"]<-1
+rctz$persr[rctz$r_embryo=="患者意愿+内膜薄"]<-1
+rctz$persr[rctz$r_embryo=="积攒胚胎"]<-1
+rctz$persr[rctz$r_embryo=="积攒胚胎，与其他周期胚胎一起移植，宫内单胎早期停育"]<-1
+rctz$persr[rctz$r_embryo=="卵巢过度刺激风险"]<-1
+rctz$persr[rctz$r_embryo=="卵泡发育不良"]<-1
+rctz$persr[rctz$r_embryo=="内膜薄"]<-1
+rctz$persr[rctz$r_embryo=="内膜因素"]<-1
+rctz$persr[rctz$r_embryo=="其他，拮抗剂方案"]<-1
+rctz$persr[rctz$r_embryo=="取卵少，累积胚胎"]<-1
+rctz$persr[rctz$r_embryo=="特殊促排方案、拟继续促排"]<-1
+rctz$persr[rctz$r_embryo=="阴道出血"]<-1
+rctz$persr[rctz$r_embryo=="子宫内膜薄"]<-1
+rctz$persr[rctz$r_embryo=="子宫内膜息肉"]<-1
+rctz$persr[rctz$r_embryo=="子宫内膜形态异常"]<-1
+rctz$persr[rctz$r_embryo=="P升高"]<-1
+
+
+rctz$persr[rctz$r_embryo=="输卵管积水"]<-1
+
+#共88个，原因可能存在重叠
+table(rctz$nocyte,useNA = "always")     #13 取消移植_在成功取卵的人里看没有移植的
+table(rctz$noavae,useNA = "always")     #28  #未获得可用胚胎
+table(rctz$valembryo,useNA = "always")  #2   #珍贵胚胎
+table(rctz$persr,useNA = "always")      #45  #个人原因
+
+
+#冷冻胚胎移植_无取消
+table(rctz$embryo_trans.x,useNA = "always")  #57
+table(rctz$embryo_trans.y,useNA = "always")  #12
+
+
+#Stage of embryo transferred, No. #(%)这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    Blastocyst transfer 
+#    Cleavage-stage embryo transfer
+table(rctz$trans_type,useNA = "always")      #新鲜胚胎种类
+rctz$trans_type2.x[rctz$trans_type2.x=="囊胚" | rctz$trans_type2.x=="囊胚期胚胎" |  rctz$trans_type2.x=="2" ]<-"囊胚"
+rctz$trans_type2.y[rctz$trans_type2.y=="囊胚" | rctz$trans_type2.y=="囊胚期胚胎"]<-"囊胚"
+table(rctz$trans_type2.x,useNA = "always")   #冷冻胚胎种类
+table(rctz$trans_type2.y,useNA = "always")   #冷冻胚胎种类  
+
+
+#Mean number of embryos transferred, No. (%) #这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    One embryo transferred
+#    Two embryos transferred
+#新鲜胚胎移植数量
+table(rctz$trans_num,useNA = "always")      #移植的卵裂期胚胎数
+table(rctz$blast_num,useNA = "always")      #移植的囊胚数
+rctz$trans_numo<-rctz$trans_num
+rctz$trans_numo[is.na(rctz$trans_num)==TRUE]<-0
+summary(rctz$trans_numo)
+rctz$blast_numo<-rctz$blast_num
+rctz$blast_numo[is.na(rctz$blast_num)==TRUE]<-0
+summary(rctz$blast_numo)
+rctz$fre_numo<-rctz$trans_numo+rctz$blast_numo
+rctz$fre_num[is.na(rctz$trans_num)==TRUE & is.na(rctz$blast_num)==TRUE]<-NA
+table(rctz$fre_num,useNA = "always") 
+
+
+#冷冻胚胎移植数量——第一次冷冻胚胎移植
+table(rctz$trans_num2.x,useNA = "always")   #移植的卵裂期胚胎数
+table(rctz$blast_num2.x,useNA = "always")   #移植的囊胚数
+rctz$trans_num2.xo<-rctz$trans_num2.x
+rctz$trans_num2.xo[is.na(rctz$trans_num2.x)==TRUE]<-0
+rctz$blast_num2.xo<-rctz$blast_num2.x
+rctz$blast_num2.xo[is.na(rctz$blast_num2.x)==TRUE]<-0
+table(rctz$trans_num2.xo,useNA = "always")   #移植的卵裂期胚胎数
+table(rctz$blast_num2.xo,useNA = "always")   #移植的囊胚数
+rctz$frz_num.xo<-as.numeric(rctz$trans_num2.xo)+as.numeric(rctz$blast_num2.xo)
+rctz$frz_num.x<-rctz$frz_num.xo
+rctz$frz_num.x[rctz$frz_num.xo==0]<-NA
+table(rctz$frz_num.x,useNA = "always") 
+
+
+#冷冻胚胎移植数量——第二次冷冻胚胎移植
+table(rctz$trans_num2.y,useNA = "always")   #移植的卵裂期胚胎数
+table(rctz$blast_num2.y,useNA = "always")   #移植的囊胚数
+rctz$trans_num2.yo<-rctz$trans_num2.y
+rctz$trans_num2.yo[is.na(rctz$trans_num2.y)==TRUE]<-0
+rctz$blast_num2.yo<-rctz$blast_num2.y
+rctz$blast_num2.yo[is.na(rctz$blast_num2.y)==TRUE]<-0
+table(rctz$trans_num2.yo,useNA = "always")   #移植的卵裂期胚胎数
+table(rctz$blast_num2.yo,useNA = "always")   #移植的囊胚数
+rctz$frz_num.yo<-rctz$trans_num2.yo+rctz$blast_num2.yo
+rctz$frz_num.y<-rctz$frz_num.yo
+rctz$frz_num.y[rctz$frz_num.yo==0]<-NA
+table(rctz$frz_num.y,useNA = "always") 
+
+
+#临床妊娠
+#新鲜胚胎临床妊娠人数/次数
+rctz$pregn[rctz$pregnancy.x=="是" & rctz$n_sacs.x>0]<-"是"
+table(rctz$pregn)
+#冷冻胚胎临床妊娠
+rctz$fpregn1[rctz$pregnancy.y=="是" & rctz$n_sacs.y>0]<-"是"
+rctz$fpregn2[rctz$pregnancy=="是" & rctz$n_sacs>0]<-"是"
+table(rctz$fpregn1)
+table(rctz$fpregn2)
+
+
+#Clinical Pregnancy of fresh transplantation, No. (%)
+rctz$pregn[rctz$pregnancy.x=="是" & rctz$n_sacs.x>0]<-"是"
+table(rctz$pregn)  #新鲜胚胎移植临床妊娠次数
+#fre_embryo    #移植次数
+
+#Clinical Pregnancy of freezed transplantation, No. (%)
+table(rctz$fpregn1)  #第一次冷冻胚胎移植临床妊娠次数
+table(rctz$fpregn2)  #第二次冷冻胚胎移植临床妊娠次数
+#embryo_trans.x      #第一次冷冻胚胎移植次数
+#embryo_trans.y      #第一次冷冻胚胎移植次数
+
+#Cumulative pregnancy rate/OPU, No. (%)
+#妊娠人数——统一写公式算
+#取卵周期数——都是一个周期？
+
+#Cumulative pregnancy rate/Transplantation, No. (%)
+#临床妊娠人数/胚胎移植人数
+
+#Number of gestational sacs, mean (SD)
+#Embryo implantation rate of fresh transplantation, No. (%)
+#胚胎着床率=孕囊个数/移植胚胎个数
+#以下为孕囊个数
+table(rctz$n_sacs.x,useNA = "always")
+#Embryo implantation rate of freezed transplantation, No. (%)
+table(rctz$n_sacs.y,useNA = "always") #第一次冷冻移植
+table(rctz$n_sacs,useNA = "always") #第二次冷冻移植
+
+
+#以下为移植率计算公式，等数据全合并再计算。
+#rctz$imp_rate<-sum(as.numeric(rctz$n_sacs.x),na.rm = TRUE)/sum(as.numeric(rctz$fre_num),na.rm = TRUE)
+#summary(rctz$imp_rate)
+#rctz$impf_rate.x<-sum(as.numeric(rctz$n_sacs.y),na.rm = TRUE)/sum(as.numeric(rctz$frz_num.x),na.rm = TRUE)
+#summary(rctz$impf_rate.x)
+#rctz$impf_rate.y<-sum(as.numeric(rctz$n_sacs),na.rm = TRUE)/sum(as.numeric(rctz$frz_num.y),na.rm = TRUE)
+#summary(rctz$impf_rate.y)
+#rctz$impf_rate<-(sum(as.numeric(rctz$n_sacs),na.rm = TRUE)+sum(as.numeric(rctz$n_sacs.y),na.rm = TRUE))/(sum(as.numeric(rctz$frz_num.y),na.rm = TRUE)+sum(as.numeric(rctz$frz_num.x),na.rm = TRUE))
+#summary(rctz$impf_rate)
+
+
+#Biochemical pregnancy, No. (%)
+#生化妊娠
+#新鲜胚胎移植生化妊娠
+table(rctz$o_cond2.x,useNA = "always")
+rctz$babort[rctz$o_cond.x=="生化妊娠"]<-"生化妊娠"
+rctz$babort[rctz$pregnancy.x=="是" & rctz$n_sacs.x==0]<-"生化妊娠"
+#第一次冷冻胚胎移植生化妊娠
+table(rctz$o_cond2.y,useNA = "always")
+rctz$babortf.x[rctz$o_cond.y=="生化妊娠"]<-"生化妊娠"
+#第二次冷冻胚胎移植无生化妊娠
+rctz$babortf.y<-NA
+
+#Miscarriages, No. (%) #早期流产
+#    Early
+#    Late
+#新鲜胚胎移植早期自然流产
+table(rctz$o_cond2.x)
+table(rctz$eabortion.x)
+
+rctz$aborte<-NA
+rctz$aborte[rctz$pregnancy.x=="是" & rctz$o_cond2.x=="胚胎停止发育，早期流产"]<-"早期自然流产"
+rctz$aborte[rctz$pregnancy.x=="是" & rctz$o_cond2.x==" 自然流产（胚胎停育）"]<-"早期自然流产"
+rctz$aborte[rctz$pregnancy.x=="是" & rctz$o_cond2.x=="异位妊娠"]<-"早期自然流产"
+rctz$aborte[rctz$pregnancy.x=="是" & rctz$eabortion.x=="是"]<-"早期自然流产"
+rctz$aborte[rctz$pregnancy.x=="是" & rctz$fheartrate.x=="无"]<-"早期自然流产"
+table(rctz$aborte)
+
+
+
+#第一次冷冻胚胎移植早期自然流产
+table(rctz$o_cond2.y)
+table(rctz$eabortion.y)
+rctz$abortef.x<-NA
+rctz$abortef.x[rctz$o_cond2.y=="胚胎停止发育，早期流产"]<-"早期自然流产"
+rctz$abortef.x[rctz$o_cond2.y=="早期流产"]<-"早期自然流产"
+rctz$abortef.x[rctz$o_cond2.y=="早期自然流产"]<-"早期自然流产"
+rctz$abortef.x[rctz$o_cond2.y=="自然流产（胚胎停育）"]<-"早期自然流产"
+rctz$abortef.x[rctz$eabortion.y=="是"]<-"早期自然流产"
+table(rctz$abortef.x)
+
+
+#第二次冷冻胚胎移植早期自然流产
+table(rctz$eabortion)
+rctz$abortef.y[rctz$eabortion=="是"]<-"早期自然流产"
+
+
+#新鲜胚胎移植中期自然流产 12周以后
+table(rctz$mabortion.x) #无
+
+
+
+#第一次冷冻胚胎移植中期自然流产
+table(rctz$o_cond2.y)
+table(rctz$mabortion.y)  #无
+rctz$abortmf<-NA
+rctz$abortmf[rctz$mabortion.y=="是"]<-"中期自然流产"
+rctz$abortmf[rctz$o_cond2.y=="孕17周胚胎停止发育行清宫术"]<-"中期自然流产"
+table(rctz$abortmf)
+
+#第二次冷冻胚胎移植中期自然流产
+table(rctz$mabortion) 
+
+#晚期自然流产
+rctz$labortion<-NA
+
+#Live birth, No (%)
+#    Premature birth
+#    Term birth
+#新鲜胚胎移植是否早产
+table(rctz$premature.x)
+#第一次冷冻胚胎移植是否早产
+table(rctz$premature.y)
+#第二次冷冻胚胎移植是否早产
+table(rctz$premature)  #无
+
+#是否活产
+table(rctz$livebirth.x) #新鲜胚胎移植
+rctz$livebirth.x[rctz$birthweight.x=="2300/2600"]<-"活双胎"
+rctz$livebirth.x[rctz$birthweight.x=="2500/2450"]<-"活双胎"
+rctz$livebirth.x[rctz$cesarean.x=="双胎妊娠"]<-"活双胎"
+table(rctz$livebirth.y) #第一次冷冻胚胎移植
+table(rctz$livebirth)   #第二次冷冻胚胎移植
+
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数          前面有
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物   前面有
+#Clinical Pregnancy of fresh transplantation, No. (%)              前面有    
+#Cumulative pregnancy rate/OPU, No. (%)                            前面有
+#Cumulative pregnancy rate/Transplantation, No. (%)                前面有
+#Number of available embryo （Range） 
+#可利用胚胎数
+table(rctz$ava_embryo,useNA = "always")
+
+
+
+#Tube of frozen embryo（means and Range）
+#剩余胚胎？
+rctz$leftem<-rctz$left_embryo+rctz$left_blast
+summary(rctz$leftem)    #缺失31人
+
+
+#Propotion of FET #冷冻胚胎移植比例
+#合并数据后再考虑计算。
+
+
+```
+
+
+#附二数据整理代码202309_le组
+```{r}
+library(openxlsx)
+syle1<-read.xlsx("D:/Rdata/20230918_RCT_supplement_0725.xlsx",sheet = "sysu_le")
+syle2<-read.xlsx("D:/Rdata/20230918_RCT_supplement2.xlsx",sheet = "sysu_le")
+
+dim(syle1)
+dim(syle2)
+
+library(dplyr)
+syle<-left_join(syle1,syle2,by="name")
+
+
+#age
+summary(syle$age)
+#bmi
+summary(syle$BMI)
+#cycle
+summary(syle$cycle)
+#infertility year
+summary(syle$inferity_year)
+#infertility type
+table(syle$inferity_type,useNA = "always")
+
+#Primary infertile (%)
+#Diminished ovarian reserve
+#41-45 years
+syle$inferity<-NA
+syle$inferity[syle$age>=40]<-"Old"
+syle$inferity[syle$age<40 & syle$AMH<1.2]<-"Diminished ovarian reserve"
+syle$inferity[syle$age<40 & syle$AFC0<5]<-"Diminished ovarian reserve"
+table(syle$inferity,useNA = "always")
+
+#疾病史暂不考虑
+#AFC
+summary(syle$AFC0)
+syle$AFC<-syle$AFC0
+
+#Baseline sex hormone, mean (SD)
+#FSH, IU/L
+#LH, IU/L
+#Estradiol, pmol/L
+#Testosterone, nmol/L
+#Progesterone, nmol/L
+#AMH, ng/mL
+#PRL
+#TSH
+#Fasting Glucose
+#Fasting insulin
+summary(syle$FSH)
+summary(syle$LH)
+table(syle$estr)
+
+syle$estro<-syle$estr
+syle$estr[syle$estro=="<20"]<-19.99
+syle$estr<-as.numeric(syle$estr)*3.67
+summary(syle$estr)
+
+summary(syle$T)
+syle$testos<-as.numeric(syle$T)
+syle$testos[syle$T=="<0.35"]<=0.349
+summary(syle$testos)
+
+table(syle$P)
+syle$prog<-as.numeric(syle$P)*3.18
+syle$prog[syle$P=="<0.1"]<-0.099*3.18
+
+summary(syle$prog)
+table(syle$PRL)
+syle$prol<-as.numeric(syle$PRL)*21.2
+summary(syle$prol)
+
+table(syle$TSH)
+syle$TSHO<-as.numeric(syle$TSH)
+syle$TSH[syle$TSHO=="0.365已核对"]<-0.365
+syle$TSH[syle$TSHO=="0.4已核对"]<-0.4
+syle$TSH[syle$TSHO=="6.297已核对"]<-6.279
+syle$TSH[syle$TSHO=="无"]<-NA
+syle$TSH<-as.numeric(syle$TSH)
+summary(syle$TSH)
+
+syle$glucoseo<-syle$glucose
+syle$glucose<-as.numeric(syle$glucoseo)
+summary(syle$glucose)
+syle$insulino<-syle$insulin
+syle$insulin[syle$insulino=="5.3已核对"]<-5.3
+syle$insulin[syle$insulino=="无"]<-NA
+syle$insulin<-as.numeric(syle$insulin)
+summary(syle$insulin)
+
+syle$ivfmo<-syle$ivfm
+syle$ivfm[syle$ivfmo=="IVF-S"]<-"IVF"
+syle$ivfm[syle$ivfmo=="ICSI,FET"]<-"ICSI"
+table(syle$ivfm,useNA = "always")
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数
+summary(syle$Gn_day)
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物
+summary(syle$Gn_dose)
+
+
+#Number of follicles≥18mm, mean (SD)
+syle$follic18<-syle$HCG卵泡数
+
+#Number of oocytes retrieved, mean (SD)
+#有两个变量 tt_oocyte.x, tt_oocyte.y
+#保留原数据里那个，为tt_oocyte.x
+syle$tt_oocyte<-syle$tt_oocyte.x
+summary(syle$tt_oocyte) #>10个是不是太多了，不可能？
+table(syle$tt_oocyte)
+
+#MII oocytes retrieved, mean (SD)
+summary(syle$M2)
+
+#MII oocytes retrieved rate, No. (%)
+summary(syle$M1)
+summary(syle$GV)
+syle$M2rate<-syle$M2/(syle$M1+syle$M2+syle$GV)*100
+summary(syle$M2rate)      #缺失64人(分母为0 38人)
+
+#Follicle output rate (%)
+syle$folrate<-syle$tt_oocyte/syle$AFC*100  #36个人tt_oocyte>AFC,这合理吗？
+summary(syle$folrate)
+
+
+#Endometrial thickness (mm)
+syle$ini_thick<-as.numeric(syle$ini_thick)
+summary(syle$ini_thick)
+
+#Number of available embryos, mean (SD)
+summary(syle$ava_embryo)
+
+#Number of high-quality embryos, mean (SD)
+summary(syle$hq_embryo)
+
+#Number of cleaved embryos, mean (SD)
+summary(syle$cle_embryo)
+
+#Number of blastocyst, mean (SD)
+summary(syle$blastocyst)
+
+#Blastocyst formation rate, No. (%)
+syle$blastrate<-syle$blastocyst/syle$blastocyst_c*100
+summary(syle$blastrate)
+
+#Available embryos rate, No. (%)
+syle$avaerate<-syle$ava_embryo/(syle$ava_embryo+syle$disc_embryo)*100
+summary(syle$avaerate)
+
+#High-quality embryos rate, No. (%)
+syle$hqerate<-syle$hq_embryo/syle$ava_embryo*100
+summary(syle$hqerate)
+
+#周期取消率
+#Number of patients who did not undergo embryo transfer, No. (%)
+#    No embryo obtained/提早排卵
+#    Personal issue
+#    Natural conception after oocyte retrieval
+syle$fre_embryo<-syle$fre_embryo.x
+table(syle$fre_embryo,useNA = "always")
+#两个r_embryo不相同，选r_embryo.x
+syle$r_embryo<-syle$r_embryo.x
+table(syle$r_embryo)
+
+
+#取消取卵_均未取消取卵
+table(syle$t_oocyte)#未成功取卵_均成功取卵——是否不合常态？
+syle$tocys<-NA
+syle$tocys[syle$tt_oocyte>0]<-"成功取卵"
+syle$tocys[syle$tt_oocyte==0]<-"未取到卵"
+syle$tocys[syle$t_oocyte=="不" | syle$t_oocyte=="否"]<-"取消取卵"
+table(syle$tocys,useNA = "always")
+
+
+syle$nocyte<-NA
+syle$noavae<-NA
+syle$noavae[syle$r_embryo=="无可利用胚胎"]<-1
+syle$valembryo<-NA
+syle$valembryo[syle$r_embryo=="珍贵胚胎" | syle$r_embryo=="珍贵胚胎？"]<-1
+syle$persr<-NA
+syle$persr[syle$r_embryo=="其它，个人原因"]<-1
+
+
+table(syle$nocyte,useNA = "always")     #取消移植_未取到卵的
+table(syle$noavae,useNA = "always")     #未获得可用胚胎
+table(syle$valembryo,useNA = "always")  #珍贵胚胎
+table(syle$persr,useNA = "always")      #个人原因
+
+
+#是否冷冻胚胎移植
+#第一次/第二次/第三次冷冻胚胎移植，由于有三次的那个第一次与第三次均未妊娠，所以写在了一起：“是+是“
+table(syle$embryo_trans.x)
+table(syle$embryo_trans.y)
+#第一次冷冻胚胎移植
+
+#缺少冷冻胚胎移植相关数据
+#Stage of embryo transferred, No. #(%)这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    Blastocyst transfer 
+#    Cleavage-stage embryo transfer
+#新鲜胚胎移植情况
+table(syle$trans_type)
+
+#Mean number of embryos transferred, No. (%) #这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    One embryo transferred
+#    Two embryos transferred
+#新鲜胚胎移植数量
+table(syle$num_embryo)
+syle$fre_num<-syle$num_embryo
+
+#冷冻胚胎移植数量
+table(syle$trans_num2.x)
+table(syle$trans_num2.y)
+
+syle$frz_num.x<-syle$trans_num2.x
+syle$frz_num.x[syle$trans_num2.x=="2+2"]<-4
+syle$frz_num.y<-syle$trans_num2.y
+
+table(syle$fre_num,useNA = "always")
+table(syle$frz_num.x,useNA = "always")
+table(syle$frz_num.y,useNA = "always")
+
+#Clinical Pregnancy of fresh transplantation, No. (%)
+table(syle$pregnancy.x)
+syle$pregn<-NA
+syle$pregn[syle$pregnancy.x=="临床妊娠"]<-"是"
+table(syle$pregn)  #新鲜胚胎移植临床妊娠次数
+#fre_embryo 新鲜胚胎移植次数
+
+#Clinical Pregnancy of freezed transplantation, No. (%)
+table(syle$pregnancy.y)
+table(syle$pregnancy)
+syle$fpregn1<-NA
+syle$fpregn1[syle$pregnancy.y=="1" | syle$pregnancy.y=="临床妊娠"]<-"是"
+table(syle$fpregn1,useNA = "always")  #第一次冷冻胚胎移植临床妊娠次数
+syle$fpregn2[syle$pregnancy=="1" | syle$pregnancy=="临床妊娠"]<-"是"
+table(syle$fpregn2,useNA = "always")  #第二次冷冻胚胎移植临床妊娠次数
+#embryo_trans.x      #第一次冷冻胚胎移植次数
+#embryo_trans.y      #第一次冷冻胚胎移植次数
+
+#Cumulative pregnancy rate/OPU, No. (%)
+#妊娠人数——统一写公式算
+#取卵周期数——都是一个周期？
+
+#Cumulative pregnancy rate/Transplantation, No. (%)
+#临床妊娠人数/胚胎移植人数
+
+
+#Number of gestational sacs, mean (SD)
+#Embryo implantation rate of fresh transplantation, No. (%)
+#胚胎着床率=孕囊个数/移植胚胎个数
+#以下为孕囊个数
+table(syle$n_sacs.x,useNA = "always")
+#Embryo implantation rate of freezed transplantation, No. (%)
+table(syle$n_sacs.y,useNA = "always") #第一次冷冻移植
+table(syle$n_sacs,useNA = "always") #第二次冷冻移植
+
+
+#Biochemical pregnancy, No. (%)
+#生化妊娠
+#新鲜胚胎移植生化妊娠
+table(syle$pregnancy.x,useNA = "always") #无生化妊娠
+syle$babort[syle$pregnancy.x=="生化妊娠"]<-"生化妊娠"
+table(syle$babort)
+
+#第一次冷冻胚胎移植生化妊娠
+table(syle$pregnancy.y,useNA = "always")
+syle$babortf.x[syle$pregnancy.y=="生化妊娠"]<-"生化妊娠"
+#第二次冷冻胚胎移植无生化妊娠
+
+table(syle$pregnancy)  #无生化妊娠
+syle$babortf.y[syle$pregnancy=="生化妊娠"]<-"生化妊娠"
+syle$babortf.y[syle$livebirth=="生化妊娠"]<-"生化妊娠"
+#Miscarriages, No. (%) #早期流产
+#    Early
+#    Late
+
+
+#新鲜胚胎移植早期自然流产
+table(syle$pregnancy.x)
+table(syle$livebirth.x)
+table(syle$eabortion.x)
+syle$aborte[syle$eabortion.x=="是" | syle$eabortion.x=="早期自然流产"]<-"早期自然流产"
+
+
+#第一次冷冻胚胎移植早期自然流产
+table(syle$livebirth.y)
+syle$abortef.x[syle$livebirth.y=="早期自然流产"]<-"早期自然流产"
+
+
+#第二次冷冻胚胎移植早期自然流产
+table(syle$livebirth)  #无早期自然流产
+
+
+#新鲜胚胎移植中期自然流产 12周以后
+syle$mabortion.x<-NA
+table(syle$mabortion.x) #无
+
+#第一次冷冻胚胎移植中期自然流产
+syle$mabortion.y<-NA
+table(syle$mabortion.y)
+
+#第二次冷冻胚胎移植中期自然流产
+syle$mabortion<-NA
+table(syle$mabortion) 
+
+#晚期自然流产——新鲜胚胎移植
+table(syle$o_cond2)
+syle$labortion<-NA
+syle$labortion[syle$o_cond2=="晚期自然流产"]<-"晚期自然流产"
+
+#Live birth, No (%)#很多活产都缺失相关信息
+#    Premature birth
+#    Term birth
+#新鲜胚胎移植是否早产
+table(syle$premature.x)
+#第一次冷冻胚胎移植是否早产
+syle$premature.y<-NA
+table(syle$premature.y)
+#第二次冷冻胚胎移植是否早产
+syle$premature<-NA
+table(syle$premature)  #无
+
+#活产
+#新鲜胚胎移植
+table(syle$livebirth.x)
+
+#第一次冷冻胚胎移植
+table(syle$livebirth.y)
+
+#第二次冷冻胚胎移植
+table(syle$livebirth)
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数          前面有
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物   前面有
+#Clinical Pregnancy of fresh transplantation, No. (%)              前面有    
+#Cumulative pregnancy rate/OPU, No. (%)                            前面有
+#Cumulative pregnancy rate/Transplantation, No. (%)                前面有
+#Number of available embryo （Range） 
+#可利用胚胎数
+table(syle$ava_embryo,useNA = "always")
+
+#Tube of frozen embryo（means and Range）
+#剩余胚胎？
+syle$leftem<-syle$left_embryo+syle$left_blast
+summary(syle$leftem)    
+
+
+#Propotion of FET #冷冻胚胎移植比例
+#合并数据后再考虑计算。
+
+
+```
+
+
+#附二数据整理代码202309_control组
+```{r}
+library(openxlsx)
+syco1<-read.xlsx("D:/Rdata/20230918_RCT_supplement_0725.xlsx",sheet = "sysu_control")
+syco2<-read.xlsx("D:/Rdata/20230918_RCT_supplement2.xlsx",sheet = "sysu_control")
+
+dim(syco1)
+dim(syco2)
+
+library(dplyr)
+syco<-left_join(syco1,syco2,by="name")
+dim(syco)
+
+#age
+summary(syco$age)
+#bmi
+summary(syco$BMI)
+#cycle
+summary(syco$cycle)
+#infertility year
+summary(syco$inferity_year)
+#infertility type
+table(syco$inferity_type,useNA = "always")
+
+#Primary infertile (%)
+#Diminished ovarian reserve
+#41-45 years
+syco$inferity<-NA
+syco$inferity[syco$age>=40]<-"Old"
+syco$inferity[syco$age<40 & syco$AMH<1.2]<-"Diminished ovarian reserve"
+syco$inferity[syco$age<40 & syco$AFC0<5]<-"Diminished ovarian reserve"
+table(syco$inferity,useNA = "always")
+
+#疾病史暂不考虑
+#AFC
+summary(syco$AFC0)
+syco$AFC<-syco$AFC0
+
+#Baseline sex hormone, mean (SD)
+    #FSH, IU/L
+    #LH, IU/L
+    #Estradiol, pmol/L
+    #Testosterone, nmol/L
+    #Progesterone, nmol/L
+    #AMH, ng/mL
+    #PRL
+    #TSH
+    #Fasting Glucose
+    #Fasting insulin
+summary(syco$FSH)
+summary(syco$LH)
+summary(syco$estr)
+table(syco$estr)
+syco$estro<-syco$estr
+syco$estr[syco$estro=="<20"]<-19.99
+syco$estr<-as.numeric(syco$estr)*3.67
+summary(syco$estr)
+
+table(syco$testos)
+syco$testoso<-syco$testos
+syco$testos[syco$testoso=="<0.35"]<=0.349
+summary(syco$testos)
+
+table(syco$prog)
+syco$prog<-as.numeric(syco$prog)*3.18
+summary(syco$prog)
+
+table(syco$prol)
+syco$prol<-as.numeric(syco$prol)*21.2
+summary(syco$prol)
+
+table(syco$TSH)
+syco$TSH<-as.numeric(syco$TSH)
+summary(syco$TSH)
+
+syco$glucose<-as.numeric(syco$glucose)
+summary(syco$glucose)
+
+syco$insulin<-as.numeric(syco$insulin)
+summary(syco$insulin)
+
+table(syco$ivfm,useNA = "always")
+#TESA是否并入IVF，ICSI？
+
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数
+summary(syco$Gn_day)
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物
+summary(syco$Gn_dose)
+
+
+#Number of follicles≥18mm, mean (SD)
+syco$follic18<-syco$HCG卵泡数
+
+#Number of oocytes retrieved, mean (SD)
+summary(syco$tt_oocyte) #>10个是不是太多了，不可能？
+table(syco$tt_oocyte)
+
+#MII oocytes retrieved, mean (SD)
+summary(syco$M2)
+
+#MII oocytes retrieved rate, No. (%)
+summary(syco$M1)
+summary(syco$GV)
+syco$M2rate<-syco$M2/(syco$M1+syco$M2+syco$GV)*100
+summary(syco$M2rate)      #缺失64人(分母为0 38人)
+
+#Follicle output rate (%)
+syco$folrate<-syco$tt_oocyte/syco$AFC*100  #36个人tt_oocyte>AFC,这合理吗？
+summary(syco$folrate)
+
+
+#Endometrial thickness (mm)
+syco$ini_thick<-as.numeric(syco$ini_thick)
+summary(syco$ini_thick)
+
+#Number of available embryos, mean (SD)
+summary(syco$ava_embryo)
+
+#Number of high-quality embryos, mean (SD)
+summary(syco$hq_embryo)
+
+#Number of cleaved embryos, mean (SD)
+summary(syco$cle_embryo)
+
+#Number of blastocyst, mean (SD)
+summary(syco$blastocyst)
+
+#Blastocyst formation rate, No. (%)
+syco$blastrate<-syco$blastocyst/syco$blastocyst_c*100
+summary(syco$blastrate)
+
+#Available embryos rate, No. (%)
+syco$avaerate<-syco$ava_embryo/(syco$ava_embryo+syco$disc_embryo)*100
+summary(syco$avaerate)
+
+#High-quality embryos rate, No. (%)
+syco$hqerate<-syco$hq_embryo/syco$ava_embryo*100
+summary(syco$hqerate)
+
+#周期取消率
+#Number of patients who did not undergo embryo transfer, No. (%)
+#    No embryo obtained/提早排卵
+#    Personal issue
+#    Natural conception after oocyte retrieval
+table(syco$fre_embryo,useNA = "always")
+table(syco$r_embryo)
+
+#取消取卵_均未取消取卵
+table(syco$t_oocyte)
+#未成功取卵_均成功取卵——是否不合常态？
+syco$tocys<-NA
+syco$tocys[syco$tt_oocyte>0]<-"成功取卵"
+syco$tocys[syco$tt_oocyte==0]<-"未取到卵"
+syco$tocys[syco$t_oocyte=="不" | syco$t_oocyte=="否"]<-"取消取卵"
+table(syco$tocys,useNA = "always")
+
+#
+syco$nocyte<-NA
+syco$noavae<-NA
+syco$noavae[syco$r_embryo=="无可利用胚胎"]<-1
+syco$valembryo<-NA
+syco$valembryo[syco$r_embryo=="珍贵胚胎"]<-1
+syco$persr<-NA
+syco$persr[syco$r_embryo=="其他" | syco$r_embryo=="其他，免疫异常"]<-1
+syco$persr[syco$r_embryo=="其他，内膜欠均" | syco$r_embryo=="其他，乳房不适"]<-1
+syco$persr[syco$r_embryo=="其它,CA125上升，HPV (+)"]<-1
+syco$persr[syco$r_embryo=="其他，个人原因"]<-1
+syco$persr[syco$r_embryo=="子宫内膜异位症"]<-1
+
+table(syco$nocyte,useNA = "always")     #取消移植_未取到卵的
+table(syco$noavae,useNA = "always")     #未获得可用胚胎
+table(syco$valembryo,useNA = "always")  #珍贵胚胎
+table(syco$persr,useNA = "always")      #个人原因
+
+
+#是否冷冻胚胎移植
+#第一次/第二次/第三次冷冻胚胎移植，由于有三次的那个第一次与第三次均未妊娠，所以写在了一起：“是+是“
+table(syco$embryo_trans.x)
+table(syco$embryo_trans.y)
+#第一次冷冻胚胎移植
+
+#缺少冷冻胚胎移植相关数据
+#Stage of embryo transferred, No. #(%)这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    Blastocyst transfer 
+#    Cleavage-stage embryo transfer
+#新鲜胚胎移植情况
+table(syco$trans_type)
+
+#Mean number of embryos transferred, No. (%) #这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    One embryo transferred
+#    Two embryos transferred
+#新鲜胚胎移植数量
+table(syco$num_embryo)
+syco$fre_num<-syco$num_embryo
+
+#冷冻胚胎移植数量
+table(syco$trans_num2.x)
+table(syco$trans_num2.y)
+
+syco$frz_num.x<-syco$trans_num2.x
+syco$frz_num.x[syco$trans_num2.x=="2+2"]<-4
+syco$frz_num.y<-syco$trans_num2.y
+
+table(syco$fre_num,useNA = "always")
+table(syco$frz_num.x,useNA = "always")
+table(syco$frz_num.y,useNA = "always")
+
+#Clinical Pregnancy of fresh transplantation, No. (%)
+table(syco$pregnancy.x)
+syco$pregn<-NA
+syco$pregn[syco$pregnancy.x=="临床妊娠"]<-"是"
+table(syco$pregn)  #新鲜胚胎移植临床妊娠次数
+#fre_embryo 新鲜胚胎移植次数
+
+#Clinical Pregnancy of freezed transplantation, No. (%)
+table(syco$pregnancy.y)
+table(syco$pregnancy)
+syco$fpregn1<-NA
+syco$fpregn1[syco$pregnancy.y=="1" | syco$pregnancy.y=="临床妊娠"]<-"是"
+table(syco$fpregn1,useNA = "always")  #第一次冷冻胚胎移植临床妊娠次数
+
+
+syco$fpregn2[syco$pregnancy=="1" | syco$pregnancy=="临床妊娠"]<-"是"
+table(syco$fpregn2,useNA = "always")  #第二次冷冻胚胎移植临床妊娠次数
+#embryo_trans.x      #第一次冷冻胚胎移植次数
+#embryo_trans.y      #第一次冷冻胚胎移植次数
+
+#Cumulative pregnancy rate/OPU, No. (%)
+#妊娠人数——统一写公式算
+#取卵周期数——都是一个周期？
+
+#Cumulative pregnancy rate/Transplantation, No. (%)
+#临床妊娠人数/胚胎移植人数
+
+
+#Number of gestational sacs, mean (SD)
+#Embryo implantation rate of fresh transplantation, No. (%)
+#胚胎着床率=孕囊个数/移植胚胎个数
+#以下为孕囊个数
+table(syco$n_sacs.x,useNA = "always")
+#Embryo implantation rate of freezed transplantation, No. (%)
+table(syco$n_sacs.y,useNA = "always") #第一次冷冻移植
+table(syco$n_sacs,useNA = "always") #第二次冷冻移植
+
+
+#Biochemical pregnancy, No. (%)
+#生化妊娠
+#新鲜胚胎移植生化妊娠
+table(syco$pregnancy.x,useNA = "always")
+syco$babort[syco$pregnancy.x=="生化妊娠"]<-"生化妊娠"
+
+#第一次冷冻胚胎移植生化妊娠
+table(syco$pregnancy.y,useNA = "always")
+syco$babortf.x[syco$pregnancy.y=="生化妊娠"]<-"生化妊娠"
+
+#第二次冷冻胚胎移植无生化妊娠
+table(syco$pregnancy)
+table(syco$livebirth)
+syco$babortf.y[syco$pregnancy=="生化妊娠"]<-"生化妊娠"
+syco$babortf.y[syco$livebirth=="生化妊娠"]<-"生化妊娠"
+table(syco$babortf.y)
+#Miscarriages, No. (%) #早期流产
+#    Early
+#    Late
+#新鲜胚胎移植早期自然流产
+table(syco$pregnancy.x)
+table(syco$livebirth.x)
+table(syco$eabortion.x)
+syco$aborte[syco$eabortion.x=="是" | syco$eabortion.x=="早期自然流产"]<-"早期自然流产"
+
+#第一次冷冻胚胎移植早期自然流产
+table(syco$livebirth.y)
+syco$abortef.x[syco$livebirth.y=="早期自然流产"]<-"早期自然流产"
+
+#第二次冷冻胚胎移植早期自然流产
+table(syco$livebirth)  #无早期自然流产
+
+
+#新鲜胚胎移植中期自然流产 12周以后
+syco$mabortion.x<-NA
+table(syco$mabortion.x) #无
+
+#第一次冷冻胚胎移植中期自然流产
+syco$mabortion.y<-NA
+table(syco$mabortion.y)
+      
+#第二次冷冻胚胎移植中期自然流产
+syco$mabortion<-NA
+table(syco$mabortion) 
+
+#晚期自然流产
+table(syco$o_cond2)
+syco$labortion<-NA
+syco$labortion[syco$o_cond2=="晚期自然流产"]<-"晚期自然流产"
+
+#Live birth, No (%)#很多活产都缺失相关信息
+#    Premature birth
+#    Term birth
+#新鲜胚胎移植是否早产
+table(syco$premature.x)
+#第一次冷冻胚胎移植是否早产
+syco$premature.y<-NA
+table(syco$premature.y)
+#第二次冷冻胚胎移植是否早产
+syco$premature<-NA
+table(syco$premature)  #无
+
+#活产
+table(syco$livebirth.x)
+
+table(syco$livebirth.y)
+
+table(syco$livebirth)
+
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数          前面有
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物   前面有
+#Clinical Pregnancy of fresh transplantation, No. (%)              前面有    
+#Cumulative pregnancy rate/OPU, No. (%)                            前面有
+#Cumulative pregnancy rate/Transplantation, No. (%)                前面有
+#Number of available embryo （Range） 
+#可利用胚胎数
+table(syco$ava_embryo,useNA = "always")
+
+#Tube of frozen embryo（means and Range）
+#剩余胚胎？
+syco$leftem<-syco$left_embryo+syco$left_blast
+summary(syco$leftem)    #缺失31人
+
+#活产
+#新鲜胚胎移植
+
+
+#Propotion of FET #冷冻胚胎移植比例
+#合并数据后再考虑计算。
+
+```
+
+
+#数据库关键变量合并与做表代码202309
+```{r}
+datao<-rctz[,c("groupa","id","inferity_type",
+              "age","BMI","cycle","inferity_year","inferity","AFC","FSH",
+              "LH","estr","testos","prog","AMH","prol","TSH","glucose",
+              "insulin","ivfm","Gn_day","Gn_dose","follic18","tt_oocyte",
+              "M2","M2rate","folrate","ini_thick","ava_embryo","hq_embryo",
+              "cle_embryo","blastocyst","blastrate","avaerate","hqerate",
+              "t_oocyte","tocys","fre_embryo","nocyte","noavae","valembryo",
+              "persr","embryo_trans.x","embryo_trans.y","trans_type",
+              "trans_type2.x","trans_type2.y","fre_num","frz_num.x",
+              "frz_num.y","pregn","fpregn1","fpregn2","n_sacs.x","n_sacs.y",
+              "n_sacs","babort","babortf.x","babortf.y","aborte","abortef.x",
+              "abortef.y","mabortion.x","abortmf","mabortion","labortion",
+              "premature.x","premature.y","premature","leftem",
+              "pregnancy.x","pregnancy.y","pregnancy",
+              "livebirth.x","livebirth.y","livebirth")]
+
+syle$id<-syle$sid
+syle$trans_type2.x<-syle$embryo_type.x
+syle$trans_type2.y<-syle$embryo_type.y
+syle$abortef.y<-NA
+syle$abortmf<-syle$mabortion.y
+datasyl<-syle[,c("groupa","id","inferity_type",
+              "age","BMI","cycle","inferity_year","inferity","AFC","FSH",
+              "LH","estr","testos","prog","AMH","prol","TSH","glucose",
+              "insulin","ivfm","Gn_day","Gn_dose","follic18","tt_oocyte",
+              "M2","M2rate","folrate","ini_thick","ava_embryo","hq_embryo",
+              "cle_embryo","blastocyst","blastrate","avaerate","hqerate",
+              "t_oocyte","tocys","fre_embryo","nocyte","noavae","valembryo",
+              "persr","embryo_trans.x","embryo_trans.y","trans_type",
+              "trans_type2.x","trans_type2.y","fre_num","frz_num.x",
+              "frz_num.y","pregn","fpregn1","fpregn2","n_sacs.x","n_sacs.y",
+              "n_sacs","babort","babortf.x","babortf.y","aborte","abortef.x",
+              "abortef.y","mabortion.x","abortmf","mabortion","labortion",
+              "premature.x","premature.y","premature","leftem",
+              "pregnancy.x","pregnancy.y","pregnancy",
+              "livebirth.x","livebirth.y","livebirth")]
+
+
+syco$trans_type2.x<-syco$embryo_type.x
+syco$trans_type2.y<-syco$embryo_type.y
+syco$abortef.y<-NA
+syco$abortmf<-syco$mabortion.y
+datasyc<-syco[,c("groupa","id","inferity_type",
+              "age","BMI","cycle","inferity_year","inferity","AFC","FSH",
+              "LH","estr","testos","prog","AMH","prol","TSH","glucose",
+              "insulin","ivfm","Gn_day","Gn_dose","follic18","tt_oocyte",
+              "M2","M2rate","folrate","ini_thick","ava_embryo","hq_embryo",
+              "cle_embryo","blastocyst","blastrate","avaerate","hqerate",
+              "t_oocyte","tocys","fre_embryo","nocyte","noavae","valembryo",
+              "persr","embryo_trans.x","embryo_trans.y","trans_type",
+              "trans_type2.x","trans_type2.y","fre_num","frz_num.x",
+              "frz_num.y","pregn","fpregn1","fpregn2","n_sacs.x","n_sacs.y",
+              "n_sacs","babort","babortf.x","babortf.y","aborte","abortef.x",
+              "abortef.y","mabortion.x","abortmf","mabortion","labortion",
+              "premature.x","premature.y","premature","leftem",
+              "pregnancy.x","pregnancy.y","pregnancy",
+              "livebirth.x","livebirth.y","livebirth")]
+
+osy<-rbind(datao,datasyc,datasyl)
+
+
+osy<-X20231012_RCT_data
+
+#变量名与表格所需要信息一一对应关系如下：
+#Age, Mean(SD), years
+summary(osy$age)
+#Body mass index, mean (SD)
+summary(osy$BMI)
+#Cycle 3
+summary(osy$cycle)
+#Duration of infertility, mean (SD), years（median (IQR)）
+summary(osy$inferity_year)
+#Primary infertile (%)
+#Diminished ovarian reserve
+#41-45 years
+table(osy$inferity,useNA = "always")
+#Antral follicle count in both ovaries, mean (SD) #缺26
+summary(osy$AFC)
+#Baseline sex hormone, mean (SD)
+#    FSH,IU/L
+#    LH,IU/L
+#    Estradiol,pmol/L
+#    Testosterone,nmol/L
+#    Progesterone,nmol/L
+#    AMH,ng/mL
+#    PRL
+#    TSH
+#    Fasting Glucose
+#    Fasting insulin
+#    IVF
+#    ICSI
+#    IVF_ICSI
+#estr	prog	testos	prol	ivfm
+
+
+#数据初步看
+summary(osy$FSH)    #221-5
+summary(osy$LH)     #221-3
+summary(osy$estr)   #221-9
+summary(osy$testos) #221-14
+osy$testos[osy$testos=="<0.35"]<-0.349
+osy$testos<-as.numeric(osy$testos)
+summary(osy$testos)
+summary(osy$prog)   #221-23
+osy$AMH<-as.numeric(osy$AMH)
+summary(osy$AMH)    #221-7
+summary(osy$prol)   #221-16
+osy$prol_ngml<-osy$prol/21.2
+#TSH
+summary(osy$TSH)    #221-11
+#fasting glucose  NA:13
+summary(osy$glucose)
+#fasting insulin  NA:58
+summary(osy$insulin)
+#IVF种类 23,158,2
+table(osy$ivfm,useNA = "always")
+osy$ivfm[osy$ivfm=="IVF+ICSI"]<-"IVF_ICSI"
+osy$ivfm[osy$ivfm=="TESA"]<-"ICSI"
+osy$ivfm[osy$tocys=="成功取卵" & is.na(osy$ivfm)==TRUE]<-"IVF"
+table(osy$ivfm,useNA = "always")
+#病史人太少
+#卵巢囊肿剔除术的病史
+#复发性流产病史
+#子宫内膜异位症病史
+#甲状腺炎
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数 #缺失2人
+summary(osy$Gn_day)
+
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物 #缺失2人
+summary(osy$Gn_dose)
+
+#Number of follicles≥18mm, mean (SD)
+summary(osy$follic18)   #缺失93人
+
+#Number of oocytes retrieved, mean (SD)
+summary(osy$tt_oocyte)   #缺失13人 
+
+#MII oocytes retrieved, mean (SD)
+summary(osy$M2)          #缺失22人 
+
+#MII oocytes retrieved rate, No. (%)
+#MII oocytes retrieved rate, (%)
+summary(osy$M2rate)      #缺失64人(分母为0 38人)
+
+#Follicle output rate (%)= 获得的卵子/窦卵泡数
+summary(osy$folrate)
+
+#Endometrial thickness (mm)_Gn当天  #缺失23人
+summary(osy$ini_thick)
+
+#Number of available embryos, mean (SD)  #缺失24人
+summary(osy$ava_embryo)
+
+#Number of high-quality embryos, mean (SD)  #缺失23人
+summary(osy$hq_embryo)
+
+#Number of cleaved embryos, mean (SD)  #缺失23人
+summary(osy$cle_embryo)
+
+#Number of blastocyst, mean (SD)  #缺失26人
+summary(osy$blastocyst)
+
+#Blastocyst formation rate, No. (%)
+osy$blastrate[osy$blastrate=="Inf"]<-NA
+summary(osy$blastrate)
+#Available embryos rate, No. (%)
+summary(osy$avaerate)
+#High-quality embryos rate, No. (%)
+osy$hqerate[osy$hqerate=="Inf"]<-NA
+summary(osy$hqerate)
+
+
+#周期取消率
+#取消取卵——否为取消
+table(osy$t_oocyte,useNA = "always")     #不、否 为取消取卵
+osy$t_oocyte[osy$t_oocyte=="不"]<-"促排取消取卵"
+osy$t_oocyte[osy$t_oocyte=="否"]<-"促排取消取卵"
+osy$t_oocyte[osy$t_oocyte=="是"]<-"取卵人数"
+table(osy$t_oocyte)
+#取卵数
+table(osy$tt_oocyte,useNA = "always")    #11个NA=8个取消移植+3个取卵缺失
+#成功取卵_取消取卵
+table(osy$tocys,useNA = "always")
+
+
+#取消移植_在成功取卵的人里看没有移植的-否为取消移植
+#Number of patients who did not undergo embryo transfer, No. (%)
+#    No embryo obtained/提早排卵
+#    Personal issue
+#    Natural conception after oocyte retrieval
+osy$fre_embryo[osy$fre_embryo=="不"]<-"否"
+osy$fre_embryo[is.na(osy$trans_type)==FALSE]<-"是"
+osy$fre_embryo[is.na(osy$pregn)=="是"]<-"是"
+table(osy$fre_embryo,useNA = "always")  
+
+
+#未进行新鲜胚胎移植
+#共88个，原因可能存在重叠_1为是，0为否
+#未进行新鲜胚胎移植
+osy$noavae<-NA
+osy$noavae[osy$ava_embryo==0]<-1
+table(osy$valembryo,useNA = "always")  #16   #珍贵胚胎
+table(osy$persr,useNA = "always")      #53  #个人原因
+osy$cancelfre<-NA
+osy$cancelfre[osy$fre_embryo=="否"]<-"个人原因"
+osy$cancelfre[osy$noavae==1 & osy$fre_embryo=="否"]<-"未获得可用胚胎"
+osy$cancelfre[osy$valembryo==1 & osy$fre_embryo=="否"]<-"珍贵胚胎"
+table(osy$cancelfre)
+
+
+#冷冻胚胎移植_无取消
+table(osy$embryo_trans.x,useNA = "always")  #91
+table(osy$embryo_trans.y,useNA = "always")  #20
+osy$embryo_trans.xn[osy$tocys=="成功取卵"]<-"否"
+osy$embryo_trans.xn[osy$embryo_trans.x=="是"]<-"是"
+osy$embryo_trans.yn[osy$tocys=="成功取卵"]<-"否"
+osy$embryo_trans.yn[osy$embryo_trans.y=="是"]<-"是"
+table(osy$embryo_trans.xn)
+table(osy$embryo_trans.yn)
+
+
+#Stage of embryo transferred, No. #(%)这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    Blastocyst transfer 
+#    Cleavage-stage embryo transfer
+table(osy$trans_type2.x,useNA = "always")   #冷冻胚胎种类
+table(osy$trans_type2.y,useNA = "always")   #冷冻胚胎种类  
+osy$trans_type[osy$trans_type=="卵裂期胚胎 "]<-"卵裂期胚胎"
+table(osy$trans_type,useNA = "always")  #新鲜胚胎移植种类
+
+
+#Mean number of embryos transferred, No. (%) #这个是指新鲜移植还是冷冻胚胎移植？最好分别分析
+#    One embryo transferred
+#    Two embryos transferred
+#新鲜胚胎移植数量
+table(osy$fre_num,useNA = "always")   
+#冷冻胚胎移植数量——第一次冷冻胚胎移植
+table(osy$frz_num.x,useNA = "always") #3，4，7需要核对 缺失2
+#缺失-众数填补
+osy$frz_num.x[osy$frz_num.x==7]<-2   #缺失2
+table(osy$frz_num.x,useNA = "always") #3，4，7需要核对 缺失2
+#冷冻胚胎移植数量——第二次冷冻胚胎移植
+table(osy$frz_num.y,useNA = "always") 
+
+osy$nfre_num<-as.numeric(osy$fre_num)
+osy$nfrz_num.x<-as.numeric(osy$frz_num.x)
+osy$nfrz_num.y<-as.numeric(osy$frz_num.y)
+
+
+table(osy$livebirth.y)
+table(osy$livebirth.x)
+table(osy$livebirth)
+
+
+#单胎、双胎
+osy$livebirth.xa<-osy$livebirth.x
+osy$livebirth.xa[osy$livebirth.x=="活双胎"]<-"双胎"
+osy$livebirth.xa[osy$livebirth.x=="活单胎"]<-"单胎"
+osy$livebirth.xa[osy$livebirth.x=="是"]<-"单胎"
+osy$livebirth.xa[osy$livebirth.x=="尚未完成实验周期"]<-"单胎"
+table(osy$livebirth.xa)
+
+osy$livebirth.ya<-osy$livebirth.y
+osy$livebirth.ya[osy$livebirth.y=="活双胎"]<-"双胎"
+osy$livebirth.ya[osy$livebirth.y=="活单胎"]<-"单胎"
+osy$livebirth.ya[osy$livebirth.y=="单活胎"]<-"单胎"
+osy$livebirth.ya[osy$livebirth.y=="是"]<-"单胎"
+osy$livebirth.ya[osy$livebirth.y=="尚未完成实验周期"]<-"单胎"
+table(osy$livebirth.ya)
+
+osy$livebirtha<-osy$livebirth
+osy$livebirtha[osy$livebirth=="活双胎"]<-"双胎"
+osy$livebirtha[osy$livebirth=="活单胎"]<-"单胎"
+osy$livebirtha[osy$livebirth=="单活胎"]<-"单胎"
+osy$livebirtha[osy$livebirth=="是"]<-"单胎"
+osy$livebirtha[osy$livebirth=="尚未完成实验周期"]<-"单胎"
+table(osy$livebirtha)
+
+
+osy$livebirth.x[osy$livebirth.x=="活单胎"]<-"是"
+osy$livebirth.x[osy$livebirth.x=="活双胎"]<-"是"
+
+osy$livebirth.y[osy$livebirth.y=="活单胎"]<-"是"
+osy$livebirth.y[osy$livebirth.y=="单活胎"]<-"是"
+osy$livebirth.y[osy$livebirth.y=="早期自然流产"]<-NA
+
+
+osy$livebirth[osy$livebirth=="活单胎"]<-"是"
+osy$livebirth[osy$livebirth=="生化妊娠"]<-NA
+
+
+#Clinical Pregnancy of fresh transplantation, No. (%)
+osy$pregn[osy$n_sacs.x=="1"]<-"是"
+osy$pregn[osy$n_sacs.x=="2"]<-"是"
+osy$pregn[osy$livebirth.x=="是"]<-"是"
+table(osy$pregn)  #新鲜胚胎移植临床妊娠次数
+#fre_embryo    #移植次数
+#Clinical Pregnancy of freezed transplantation, No. (%)
+osy$fpregn1[osy$n_sacs.y=="1"]<-"是"
+osy$fpregn1[osy$n_sacs.y=="2"]<-"是"
+osy$fpregn1[osy$livebirth.y=="是"]<-"是"
+
+table(osy$fpregn1)  #第一次冷冻胚胎移植临床妊娠次数
+osy$fpregn2[osy$n_sacs=="1"]<-"是"
+osy$fpregn2[osy$n_sacs=="2"]<-"是"
+osy$fpregn2[osy$livebirth=="是"]<-"是"
+table(osy$fpregn2)  #第二次冷冻胚胎移植临床妊娠次数
+#embryo_trans.x      #第一次冷冻胚胎移植次数
+#embryo_trans.y      #第一次冷冻胚胎移植次数
+
+
+#Cumulative pregnancy rate/OPU, No. (%)
+#妊娠人数——统一写公式——妊娠率
+osy$tpregn[osy$fre_embryo=="是" | osy$embryo_trans.x=="是" | osy$embryo_trans.x=="是+是" |
+             osy$embryo_trans.y=="是"]<-"移植后未妊娠人数"
+osy$tpregn[osy$pregn=="是" | osy$fpregn1=="是" | osy$fpregn2=="是"]<-"移植后妊娠人数_妊娠率"
+table(osy$tpregn)
+
+
+osy$ttpregno<-paste0(osy$pregn,osy$fpregn1,osy$fpregn2)
+table(osy$ttpregno)
+osy$ttpregn<-NA
+osy$ttpregn[osy$ttpregno=="NANA是" | osy$ttpregno=="NA是NA" | osy$ttpregno=="是NANA"]<-"妊娠1次"
+osy$ttpregn[osy$ttpregno=="NA是是" | osy$ttpregno=="是是NA"]<-"妊娠2次"
+table(osy$ttpregn)
+
+
+osy$ftpregno<-paste0(osy$fpregn1,osy$fpregn2)
+table(osy$ftpregno)
+osy$ftpregn[osy$ftpregno=="NA是" | osy$ftpregno=="是NA"]<-"冷冻胚胎妊娠1次"
+osy$ftpregn[osy$ftpregno=="是是"]<-"冷冻胚胎妊娠2次"
+osy$ftpregn[osy$ftpregno=="NANA"]<-NA
+
+osy$ftpreg[osy$embryo_trans.x=="是" | osy$embryo_trans.x=="是+是" |
+             osy$embryo_trans.y=="是"]<-"冷冻胚胎未妊娠人数"
+osy$ftpreg[osy$fpregn1=="是" | osy$fpregn2=="是"]<-"冷冻胚胎妊娠人数"
+
+
+table(osy$tpregn) #妊娠人数
+table(osy$ttpregn) #妊娠次数
+osy$pregno<-NA
+osy$pregno[osy$fre_embryo=="是"]<-"新鲜胚胎移植未妊娠人数与次数"
+osy$pregno[osy$pregn=="是" & osy$fre_embryo=="是"]<-"新鲜胚胎移植妊娠人数与次数_新鲜胚胎妊娠率"
+table(osy$pregno) #新鲜胚胎移植妊娠人数与次数
+
+#取卵周期数——都是一个周期？
+#胚胎移植率
+osy$fre_emb<-NA
+osy$fre_emb[osy$fre_embryo=="是"]<-"是"
+osy$fre_embt<-NA
+osy$fre_embt[osy$tocys=="成功取卵"]<-"取到卵未移植"
+osy$fre_embt[osy$fre_emb=="是"]<-"新鲜胚胎移植人数与次数"
+table(osy$fre_embt) #新鲜胚胎移植人数与次数_新鲜胚胎移植率
+
+osy$frz_emb<-NA
+osy$frz_emb[osy$tocys=="成功取卵"]<-"成功取卵未冷冻胚胎移植"
+osy$frz_emb[osy$embryo_trans.x=="是" | osy$embryo_trans.y=="是"]<-"冷冻胚胎移植人数"
+table(osy$frz_emb)
+
+osy$frz_embo<-paste0(osy$embryo_trans.x,osy$embryo_trans.y)
+table(osy$frz_embo)
+osy$frz_embt<-NA
+osy$frz_embt[osy$frz_embo=="是NA"]<-"冷冻胚胎移植1次"
+osy$frz_embt[osy$frz_embo=="是是"]<-"冷冻胚胎移植2次"
+osy$frz_embt[osy$frz_embo=="是+是是"]<-"冷冻胚胎移植3次"
+table(osy$frz_embt) #冷冻胚胎移植次数
+
+
+osy$tembryo[osy$tocys=="成功取卵"]<-"成功取卵未进行胚胎移植人数"
+osy$tembryo[osy$fre_embryo=="是" | osy$embryo_trans.x=="是" | osy$embryo_trans.y=="是" | osy$embryo_trans.x=="是+是"]<-"胚胎移植人数"
+table(osy$tembryo) #胚胎移植人数
+
+
+osy$ttembryo<-paste0(osy$fre_emb,osy$embryo_trans.x,osy$embryo_trans.y)
+table(osy$ttembryo) 
+osy$ttembry<-NA
+osy$ttembry[osy$ttembryo=="NA是NA" | osy$ttembryo=="是NANA"]<-"移植1次"
+osy$ttembry[osy$ttembryo=="NA是是" | osy$ttembryo=="是是NA"]<-"移植2次"
+osy$ttembry[osy$ttembryo=="NA是+是是" | osy$ttembryo=="是是是"]<-"移植3次"
+table(osy$ttembry) #胚胎移植次数
+
+
+#Number of gestational sacs, mean (SD)
+#Embryo implantation rate of fresh transplantation, No. (%)
+#胚胎着床率=孕囊个数/移植胚胎个数
+#以下为孕囊个数
+osy$n_sacs.x[osy$babort=="生化妊娠"]<-0
+table(osy$n_sacs.x,useNA = "always")
+#Embryo implantation rate of freezed transplantation, No. (%)
+osy$n_sacs.y[osy$n_sacs.y=="0+0"]<-0
+table(osy$n_sacs.y,useNA = "always") #第一次冷冻移植
+osy$n_sacs.y[is.na(osy$fpregn1)==TRUE & is.na(osy$babortf.x)==TRUE]<-NA
+table(osy$n_sacs.y)
+table(osy$n_sacs,useNA = "always") #第二次冷冻移植
+
+
+#Biochemical pregnancy, No. (%)
+#生化妊娠
+#新鲜胚胎移植生化妊娠
+
+#是否移植作分母
+#table(osy$babort)
+#osy$babortt[osy$fre_emb=="是"]<-"否"
+#osy$babortt[osy$babort=="生化妊娠"]<-"生化妊娠"
+#osy$babortt[osy$pregn=="是" & osy$n_sacs.x==0]<-"生化妊娠"
+#table(osy$babortt,useNA = "always")
+
+#临床妊娠+生化妊娠做分母
+table(osy$babort)
+osy$babortt<-NA
+osy$babortt[osy$pregn=="是"]<-"临床妊娠"
+osy$babortt[osy$babort=="生化妊娠"]<-"生化妊娠"
+osy$babortt[osy$pregn=="是" & osy$n_sacs.x==0]<-"生化妊娠"
+table(osy$babortt,useNA = "always")
+
+
+#第一次冷冻胚胎移植生化妊娠
+
+#移植作分母
+#table(osy$babortf.x)
+#osy$babortf.xt<-NA
+#osy$babortf.xt[osy$embryo_trans.x=="是"]<-"否"
+#osy$babortf.xt[osy$babortf.x=="生化妊娠"]<-"生化妊娠"
+#osy$babortf.xt[osy$fpregn1=="是" & osy$n_sacs.y==0]<-"生化妊娠"
+#table(osy$babortf.xt,useNA ="always")
+
+#临床妊娠+生化妊娠作分母
+table(osy$babortf.x)
+osy$babortf.xt<-NA
+osy$babortf.xt[osy$fpregn1=="是"]<-"临床妊娠"
+osy$babortf.xt[osy$babortf.x=="生化妊娠"]<-"生化妊娠"
+osy$babortf.xt[osy$fpregn1=="是" & osy$n_sacs.y==0]<-"生化妊娠"
+table(osy$babortf.xt,useNA ="always")
+
+
+#第二次冷冻胚胎移植无生化妊娠
+#移植作分母
+#table(osy$babortf.y)
+#osy$babortf.yt<-NA
+#osy$babortf.yt[osy$embryo_trans.y=="是"]<-"否"
+#osy$babortf.yt[osy$babortf.y=="生化妊娠"]<-"生化妊娠"
+#osy$babortf.yt[osy$fpregn2=="是" & osy$n_sacs==0]<-"生化妊娠"
+#table(osy$babortf.yt,useNA = "always")
+
+#第二次冷冻胚胎移植无生化妊娠
+#生化妊娠+临床妊娠做分母
+table(osy$babortf.y)
+osy$babortf.yt<-NA
+osy$babortf.yt[osy$fpregn2=="是"]<-"临床妊娠"
+osy$babortf.yt[osy$babortf.y=="生化妊娠"]<-"生化妊娠"
+osy$babortf.yt[osy$fpregn2=="是" & osy$n_sacs==0]<-"生化妊娠"
+table(osy$babortf.yt,useNA = "always")
+
+
+#Miscarriages, No. (%) #早期流产
+#    Early
+#    Late
+#新鲜胚胎移植早期自然流
+osy$aborte[osy$fre_embryo=="是" & is.na(osy$aborte)==TRUE]<-"否"
+table(osy$aborte,useNA = "always")
+#第一次冷冻胚胎移植早期自然流产
+osy$abortef.x[is.na(osy$abortef.x)==TRUE & osy$embryo_trans.x=="是"]<-"否"
+table(osy$abortef.x,useNA = "always")
+#第二次冷冻胚胎移植早期自然流产
+osy$abortef.y[is.na(osy$abortef.y)==TRUE & osy$embryo_trans.y=="是"]<-"否"
+table(osy$abortef.y,useNA = "always")
+
+
+#新鲜胚胎移植中期自然流产 12周以后
+osy$mabortion.x[osy$fre_embryo=="是" & is.na(osy$mabortion.x)==TRUE]<-"否"
+osy$mabortion.x[osy$mabortion.x=="不"]<-"否"
+table(osy$mabortion.x,useNA = "always") #无
+#第一次冷冻胚胎移植中期自然流产
+osy$abortmf[is.na(osy$abortmf)==TRUE & osy$embryo_trans.x=="是"]<-"否"
+table(osy$abortmf,useNA = "always")
+#第二次冷冻胚胎移植中期自然流产
+osy$mabortion[is.na(osy$mabortion)==TRUE & osy$embryo_trans.y=="是"]<-"否"
+osy$mabortion[osy$mabortion=="不"]<-"否"
+table(osy$mabortion,useNA = "always") 
+
+#晚期自然流产——新鲜胚胎移植
+osy$labortion[is.na(osy$labortion)==TRUE & osy$pregn=="是"]<-"否"
+table(osy$labortion,useNA = "always")
+
+#Live birth, No (%)
+#    Premature birth
+#    Term birth
+#新鲜胚胎移植是否早产
+osy$premature.x[osy$premature.x=="不"]<-"否"
+table(osy$premature.x)
+#第一次冷冻胚胎移植是否早产
+osy$premature.y[osy$premature.y=="不"]<-"否"
+table(osy$premature.y)
+#第二次冷冻胚胎移植是否早产
+osy$premature[osy$premature=="不"]<-"否"
+table(osy$premature)  #无
+
+
+#活产_/trans
+osy$livebirth.x[osy$fre_embryo=="是" & is.na(osy$livebirth.x)==TRUE]<-"否"
+table(osy$livebirth.x)
+osy$livebirth.y[is.na(osy$livebirth.y)==TRUE & osy$embryo_trans.x=="是"]<-"否"
+table(osy$livebirth.y)
+osy$livebirth[is.na(osy$livebirth)==TRUE & osy$embryo_trans.y=="是"]<-"否"
+table(osy$livebirth)
+
+
+#活产
+osy$livebirtht<-"未活产/COS"
+osy$livebirtht[osy$livebirth.x=="是" | osy$livebirth.y=="是" | osy$livebirth=="是"]<-"活产/COS"
+osy$livebirtht[osy$livebirth.x=="尚未完成实验周期" | osy$livebirth.y=="尚未完成实验周期" | osy$livebirth=="尚未完成实验周期"]<-"活产/COS"
+table(osy$livebirtht)
+
+
+#活产
+osy$livebirtht2<-NA
+osy$livebirtht2[osy$tocys=="成功取卵"]<-"未活产/collection"
+osy$livebirtht2[osy$livebirtht=="活产/COS"]<-"活产/collection"
+table(osy$livebirtht2)
+
+
+#单胎，双胎
+osy$livebirthat<-NA
+osy$livebirthat[osy$livebirth.x=="是" | osy$livebirth.y=="是" | osy$livebirth=="是"]<-"活单胎"
+osy$livebirthat[osy$livebirth.x=="尚未完成实验周期" | osy$livebirth.y=="尚未完成实验周期" | osy$livebirth=="尚未完成实验周期"]<-"活单胎"
+osy$livebirthat[osy$livebirth.xa=="双胎"]<-"活双胎"
+osy$livebirthat[osy$livebirth.ya=="双胎"]<-"活双胎"
+osy$livebirthat[osy$livebirtha=="双胎"]<-"活双胎"
+table(osy$livebirthat)
+
+#早期流产、中期流产、晚期流产、活产应该整在一个变量里
+
+
+osy$fre_out<-osy$livebirth.x
+osy$fre_out[osy$livebirth.x=="是"]<-"新鲜_活产"
+osy$fre_out[osy$livebirth.x=="否"]<-"新鲜_移植未妊娠"
+osy$fre_out[osy$aborte=="早期自然流产"]<-"新鲜_早期自然流产"
+osy$fre_out[osy$mabortion.x=="是"]<-"新鲜_中期自然流产"
+osy$fre_out[osy$labortion=="晚期自然流产"]<-"新鲜_晚期自然流产"
+table(osy$fre_out)
+
+
+osy$fre_outa<-osy$livebirth.x
+osy$fre_outa[osy$livebirth.x=="是"]<-"新鲜_活产"
+osy$fre_outa[osy$livebirth.x=="否"]<-"新鲜_非活产"
+osy$fre_outa[osy$livebirth.x=="尚未完成实验周期"]<-"新鲜_活产"
+osy$fre_outa[osy$livebirth.x=="失访"]<-"失访"
+table(osy$fre_outa)
+
+#以是否移植为分母
+#osy$fre_outb[is.na(osy$fre_out)==FALSE]<-"新鲜_非早期自然流产"
+#osy$fre_outb[osy$fre_out=="新鲜_早期自然流产"]<-"新鲜_早期自然流产"
+#osy$fre_outb[osy$fre_out=="新鲜_中期自然流产"]<-"新鲜_非早期自然流产"
+#osy$fre_outb[osy$fre_out=="新鲜_晚期自然流产"]<-"新鲜_非早期自然流产"
+#table(osy$fre_outb)
+
+#以是否妊娠为分母
+osy$fre_outb<-NA
+osy$fre_outb[osy$pregno=="新鲜胚胎移植妊娠人数与次数_新鲜胚胎妊娠率"]<-"新鲜_非早期自然流产"
+osy$fre_outb[osy$fre_out=="新鲜_早期自然流产"]<-"新鲜_早期自然流产"
+table(osy$fre_outb)
+
+osy$frz_out1<-osy$livebirth.y
+osy$frz_out1[osy$livebirth.y=="是"]<-"冷冻_活产"
+osy$frz_out1[osy$livebirth.y=="否"]<-"冷冻_移植未妊娠"
+osy$frz_out1[osy$abortef.x=="早期自然流产"]<-"冷冻_早期自然流产"
+osy$frz_out1[osy$abortmf=="中期自然流产"]<-"冷冻_中期自然流产"
+table(osy$frz_out1)
+
+osy$frz_out1a<-osy$livebirth.y
+osy$frz_out1a[osy$livebirth.y=="是"]<-"冷冻_活产"
+osy$frz_out1a[osy$livebirth.y=="否"]<-"冷冻_非活产"
+osy$frz_out1a[osy$livebirth.y=="尚未完成实验周期"]<-"冷冻_活产"
+osy$frz_out1a[osy$abortef.x=="早期自然流产"]<-"冷冻_非活产"
+osy$frz_out1a[osy$abortmf=="中期自然流产"]<-"冷冻_非活产"
+table(osy$frz_out1a)
+
+#分母为移植
+#osy$frz_out1b<-osy$livebirth.y
+#osy$frz_out1b[osy$livebirth.y=="是"]<-"冷冻_非早期自然流产"
+#osy$frz_out1b[osy$livebirth.y=="否"]<-"冷冻_非早期自然流产"
+#osy$frz_out1b[osy$livebirth.y=="尚未完成实验周期"]<-"冷冻_非早期自然流产"
+#osy$frz_out1b[osy$abortef.x=="早期自然流产"]<-"冷冻_早期自然流产"
+#osy$frz_out1b[osy$abortmf=="中期自然流产"]<-"冷冻_非早期自然流产"
+#table(osy$frz_out1b)
+
+#分母为妊娠
+osy$frz_out1b<-NA
+osy$frz_out1b[osy$fpregn1e=="冷冻_妊娠"]<-"冷冻_非早期自然流产"
+osy$frz_out1b[osy$abortef.x=="早期自然流产"]<-"冷冻_早期自然流产"
+table(osy$frz_out1b)
+
+
+osy$frz_out2<-osy$livebirth
+osy$frz_out2[osy$livebirth=="是"]<-"冷冻_活产"
+osy$frz_out2[osy$livebirth=="否"]<-"冷冻_移植未妊娠"
+osy$frz_out2[osy$abortef.y=="早期自然流产"]<-"冷冻_早期自然流产"
+osy$frz_out2[osy$mabortion=="中期自然流产"]<-"冷冻_中期自然流产"
+table(osy$frz_out2)
+
+osy$frz_out2a<-osy$livebirth
+osy$frz_out2a[osy$livebirth=="是"]<-"冷冻_活产"
+osy$frz_out2a[osy$livebirth=="否"]<-"冷冻_非活产"
+osy$frz_out2a[osy$livebirth=="尚未完成实验周期"]<-"冷冻_活产"
+osy$frz_out2a[osy$abortef.y=="早期自然流产"]<-"冷冻_非活产"
+osy$frz_out2a[osy$mabortion=="中期自然流产"]<-"冷冻_非活产"
+table(osy$frz_out2a)
+
+#移植作分母
+#osy$frz_out2b<-osy$livebirth
+#osy$frz_out2b[osy$livebirth=="是"]<-"冷冻_非早期自然流产"
+#osy$frz_out2b[osy$livebirth=="否"]<-"冷冻_非早期自然流产"
+#osy$frz_out2b[osy$livebirth=="尚未完成实验周期"]<-"冷冻_非早期自然流产"
+#osy$frz_out2b[osy$abortef.y=="早期自然流产"]<-"冷冻_早期自然流产"
+#osy$frz_out2b[rctz$mabortion=="中期自然流产"]<-"冷冻_非早期自然流产"
+#table(osy$frz_out2b)
+
+#妊娠作分母
+osy$frz_out2b<-NA
+osy$frz_out2b[osy$fpregn2a=="冷冻_妊娠"]<-"冷冻_非早期自然流产"
+osy$frz_out2b[osy$abortef.y=="早期自然流产"]<-"冷冻_早期自然流产"
+table(osy$frz_out2b)
+
+
+#Days of ovarian stimulation, mean (SD) 包括药物+Gn的天数          前面有
+#Total gonadotropin dose, mean (SD), IU 指的是Gn的量，不包括药物   前面有
+#Clinical Pregnancy of fresh transplantation, No. (%)              前面有    
+#Cumulative pregnancy rate/OPU, No. (%)                            前面有
+#Cumulative pregnancy rate/Transplantation, No. (%)                前面有
+#Number of available embryo （Range） 
+#可利用胚胎数
+table(osy$ava_embryo,useNA = "always")
+
+#Tube of frozen embryo（means and Range）
+#剩余胚胎？
+summary(osy$leftem)    #缺失31人
+#Propotion of FET #冷冻胚胎移植比例
+
+#冷冻胚胎率
+osy$frzrate<-NA
+osy$frzrate[osy$fre_embryo=="是"]<-"仅新鲜胚胎移植人数"
+osy$frzrate[osy$fre_embryo=="是" & osy$embryo_trans.x=="是"]<-"既有新鲜又冷冻"
+osy$frzrate[osy$fre_embryo=="是" & osy$embryo_trans.y=="是"]<-"既有新鲜又冷冻"
+table(osy$frzrate)
+
+#生化妊娠应该与临床妊娠放一起计算百分率
+osy$tpregne<-osy$pregno
+osy$tpregne[osy$babort=="生化妊娠"]<-"新鲜_生化妊娠"
+osy$tpregne[osy$pregno=="是"]<-"新鲜_妊娠"
+osy$tpregne[osy$pregno=="否"]<-"新鲜_未妊娠"
+#pregno
+#babortt
+table(osy$tpregne)
+
+osy$fpregn1e<-osy$fpregn1
+osy$fpregn1e[osy$embryo_trans.x=="是" & is.na(osy$fpregn1)==TRUE]<-"冷冻_未妊娠"
+osy$fpregn1e[osy$babortf.x=="生化妊娠"]<-"冷冻_生化妊娠"
+osy$fpregn1e[osy$fpregn1=="是"]<-"冷冻_妊娠"
+table(osy$fpregn1e)
+
+osy$fpregn1a<-osy$fpregn1
+osy$fpregn1a[osy$embryo_trans.x=="是" & is.na(osy$fpregn1)==TRUE]<-"冷冻_未妊娠"
+osy$fpregn1a[osy$babortf.x=="生化妊娠"]<-"冷冻_未妊娠"
+osy$fpregn1a[osy$fpregn1=="是"]<-"冷冻_妊娠"
+table(osy$fpregn1a)
+#fpregn1a
+#babortf.xt
+
+osy$fpregn2e<-osy$fpregn2
+osy$fpregn2e[osy$embryo_trans.y=="是" & is.na(osy$fpregn2)==TRUE]<-"冷冻_未妊娠"
+osy$fpregn2e[osy$babortf.y=="生化妊娠"]<-"冷冻_生化妊娠"
+osy$fpregn2e[osy$fpregn2=="是"]<-"冷冻_妊娠"
+table(osy$fpregn2e)
+
+osy$fpregn2a<-osy$fpregn2
+osy$fpregn2a[osy$embryo_trans.y=="是" & is.na(osy$fpregn2)==TRUE]<-"冷冻_未妊娠"
+osy$fpregn2a[osy$babortf.y=="生化妊娠"]<-"冷冻_未妊娠"
+osy$fpregn2a[osy$fpregn2=="是"]<-"冷冻_妊娠"
+table(osy$fpregn2a)
+#fpregn2a
+#babortf.yt
+
+
+#合并数据后再考虑计算。
+#id=82要排除，患者自行服药
+osyt1<-subset(osy,age>=40 | AFC<5 | AMH<1.2)
+osyt<-subset(osyt1,id!=82)
+osyt<-subset(osyt,is.na(livebirth.x)==TRUE)
+```}
+
+
+
+```{r}
+#dat<-list("总人群数据"=osyt,"每个周期一行的数据"=ft,"冷冻周期数据"=fet)
+#20231103_RCT_data.xlsx
+
+
+
+
+
+
+dim(osyt)
+osyt$groupb[osyt$groupa=="control"]<-"conyoung"
+osyt$groupb[osyt$groupa=="expri"]<-"expriyoung"
+osyt$groupb[osyt$age>=40 & osyt$groupa=="control"]<-"conold"
+osyt$groupb[osyt$age>=40 & osyt$groupa=="expri"]<-"expriold"
+
+
+#为了分组方便，用AMHa_但感觉没有必要，因为old 一般高，young一般低，年龄分布也会十分不均衡
+osyt$AMHc<-NA
+osyt$AMHc[osyt$AMH<1.0]<-"low_AMH"
+osyt$AMHc[osyt$AMH>=1.0]<-"high_AMH"
+#osyt$AMHc[is.na(osyt$AMH)==TRUE]<-"low_AMH"
+table(osyt$AMHc,useNA = "always")
+
+#为了分组方便，用AFC但感觉没有必要，因为old 一般高，young一般低，年龄分布也会十分不均衡
+osyt$AFCc<-NA
+osyt$AFCc[osyt$AFC<4.0]<-"low_AFC"
+osyt$AFCc[osyt$AFC>=4.0]<-"high_AFC"
+#osyt$AFCc[is.na(osyt$AFC)==TRUE]<-"high_AFC"
+table(osyt$AFCc,useNA = "always")
+
+
+#cycle：曾经有cycle, 曾经无cycle，以0分界
+osyt$cyclec<-NA
+osyt$cyclec[osyt$cycle==0 & osyt$groupa=="control"]<-"first_con"
+osyt$cyclec[osyt$cycle>0 & osyt$groupa=="control"]<-"previous_con"
+osyt$cyclec[osyt$cycle==0 & osyt$groupa=="expri"]<-"first_expri"
+osyt$cyclec[osyt$cycle>0 & osyt$groupa=="expri"]<-"previous_expri"
+table(osyt$cyclec,useNA = "always")
+
+table(osyt$groupb)
+
+osyt$n_sacs.x[osyt$n_sacs.x==0]<-NA
+osyt$n_sacs.x<-as.numeric(osyt$n_sacs.x)
+osyt$n_sacs.y[osyt$n_sacs.y==0]<-NA
+osyt$n_sacs.y<-as.numeric(osyt$n_sacs.y)
+osyt$n_sacs[osyt$n_sacs==0]<-NA
+osyt$n_sacs<-as.numeric(osyt$n_sacs)
+
+#取卵周期数，妊娠人数
+table(osyt$tpregn)
+table(osyt$t_oocyte)
+osyt$preg_cos<-NA
+osyt$preg_cos[osyt$t_oocyte=="取卵人数"]<-"取卵未临床妊娠人数"
+osyt$preg_cos[osyt$tpregn=="移植后妊娠人数_妊娠率"]<-"一次COS临床妊娠率"
+
+osyt$sac.x<-as.factor(osyt$n_sacs.x)
+osyt$sac.y<-as.factor(osyt$n_sacs.y)
+osyt$sac<-as.factor(osyt$n_sacs)
+
+osyt$transtype<-paste0(osyt$fre_num,osyt$trans_type)
+osyt$gtrans<-paste0(osyt$transtype,osyt$groupa)
+osyt$gtrans[osyt$transtype=="NANA"]<-NA
+table(osyt$gtrans)
+
+#成功取卵
+table(osyt$tocys)
+osyt$stocys<-osyt$tocys
+osyt$stocys[osyt$tocys=="取消取卵"]<-"取消/未取卵"
+osyt$stocys[osyt$tocys=="未取到卵"]<-"取消/未取卵"
+table(osyt$stocys)
+
+
+#每个周期都要合并算的变量：
+#移植胚胎数：no_embryos transferred: fre_num, frz_unm.x, frz_num.y
+#是否活产：fre_outa,frz_out1a, frz_out2a
+#是否临床妊娠: pregno, fpregn1a, fpregn2a
+#早期流产：fre_outb,frz_out1b,frz_out2b
+
+#osyt的分类变量
+cate<-c("inferity_type","ivfm","t_oocyte","stocys","fre_embt","pregno",
+      "livebirtht","livebirtht2",
+      "livebirthat","fre_outa","babortt","fre_num","sac.x",
+      "fre_outb","cancelfre","preg_cos","tpregn")
+
+#osyt的所有变量——按顺序输出结果
+var<-c("age","BMI","AMH","AFC","cycle","inferity_type","inferity_year",
+      "FSH","LH","estr","testos","prol_ngml","TSH","glucose","insulin",
+      "ivfm","Gn_day","Gn_dose","follic18","tt_oocyte","M2","folrate",
+      "ini_thick","t_oocyte","stocys","ava_embryo","hq_embryo","fre_embt","pregno",
+      "livebirtht","livebirtht2","livebirthat",
+      "fre_outa","babortt","nfre_num","n_sacs.x","fre_num","sac.x",
+      "fre_outb","cancelfre","preg_cos","tpregn")
+
+#osyt的连续性
+scon<-c("age","BMI","AMH","AFC","cycle","inferity_year",
+      "FSH","LH","estr","testos","prol_ngml","TSH","glucose","insulin",
+      "Gn_day","Gn_dose","follic18","tt_oocyte","M2","folrate",
+      "ini_thick","ava_embryo","hq_embryo","nfre_num",
+      "n_sacs.x")
+osyt$nfre_num<-as.numeric(osyt$nfre_num)
+osyt$n_sacs.x<-as.numeric(osyt$n_sacs.x)
+
+
+#每个周期都要合并算的变量：
+#移植胚胎数：no_embryos transferred: fre_num, frz_unm.x, frz_num.y
+#是否活产：fre_outa,frz_out1a, frz_out2a
+#是否临床妊娠: pregno, fpregn1a, fpregn2a
+#早期流产：fre_outb,frz_out1b,frz_out2b
+#是否胚胎移植:fre_embt,embryo_trans.x,embryo_trans.y
+#囊胚数：n_sacs.x,n_sacs.y,n_sacs
+
+fr<-osyt[,c("id","cyclec","groupa","groupb","cycle","fre_embt","nfre_num","n_sacs.x","fre_outa","pregno","fre_outb")]
+fr$group<-"新鲜"
+fe1<-osyt[,c("id","cyclec","groupa","groupb","cycle","embryo_trans.x","nfrz_num.x","n_sacs.y","frz_out1a","fpregn1a","frz_out1b")]
+fe1$group<-"冷冻"
+fe2<-osyt[,c("id","cyclec","groupa","groupb","cycle","embryo_trans.y","nfrz_num.y","n_sacs","frz_out2a","fpregn2a","frz_out2b")]
+fe2$group<-"冷冻"
+ft<-as.data.frame(rbind(as.matrix(fr),as.matrix(fe1),as.matrix(fe2)))
+
+table(ft$nfre_num)
+ft$nfre_num<-as.numeric(ft$nfre_num)
+a<-subset(ft,nfre_num==4)
+a$nfre_num[a$nfre_num==4]<-2
+ft<-subset(ft,nfre_num!=4)
+ft<-rbind(ft,a,a)
+ft$n_sacs.x<-as.numeric(ft$n_sacs.x)
+
+table(ft$cyclec)
+
+table(ft$fre_outa)
+ft$fre_outat<-substring(ft$fre_outa,4,7)
+ft$fre_outat[ft$fre_outat=="活产"]<-"活产/周期_活产率"
+table(ft$fre_outat)
+
+table(ft$fre_embt)
+ft$embryo_trans<-ft$fre_embt
+ft$embryo_trans[ft$fre_embt=="取卵未移植"]<-NA
+ft$embryo_trans[ft$fre_embt=="新鲜胚胎移植人数与次数"]<-"新鲜胚胎移植"
+ft$embryo_trans[ft$fre_embt=="是"]<-"冷冻胚胎移植"
+table(ft$embryo_trans)
+
+ft$pregnot[ft$pregno=="冷冻_妊娠"]<-"妊娠次数_妊娠率/周期"
+ft$pregnot[ft$pregno=="冷冻_未妊娠"]<-"移植_未妊娠"
+ft$pregnot[ft$pregno=="新鲜胚胎移植妊娠人数与次数_新鲜胚胎妊娠率"]<-"妊娠次数_妊娠率/周期"
+ft$pregnot[ft$pregno=="新鲜胚胎移植未妊娠人数与次数"]<-"移植_未妊娠"
+table(ft$pregnot)
+
+table(ft$fre_outb)
+ft$fre_outbt<-substring(ft$fre_outb,4,11)
+ft$fre_outbt[ft$fre_outbt=="早期自然流产"]<-"早期自然流产率/周期"
+table(ft$fre_outbt)
+
+
+#所有周期要分析的变量
+scon1<-c("nfre_num","n_sacs.x")
+cate1<-c("embryo_trans","pregnot","fre_outat","fre_outbt")
+var1<-c(scon1,cate1)
+
+
+
+
+#冷冻胚胎移植要合的变量：
+#活产：frz_out1a, frz_out2a
+#生化妊娠:babortf.xt, babortf.yt
+#种植率：n_sac.y,n_sac
+#移植数: frz_num.x, frz_num.y
+#种植数: sac.y,sac
+#分层因素:trans_type2.x, trans_type2.y
+#流产:frz_out1b, frz_out2b
+#妊娠:fpregn1a,fpregn2a
+#移植："embryo_trans.xn","embryo_trans.yn",
+
+fea1<-osyt[,c("id","cyclec","groupa","groupb","embryo_trans.xn","fpregn1a","frz_out1a","babortf.xt","n_sacs.y","nfrz_num.x","trans_type2.x","frz_num.x","sac.y","frz_out1b")]
+fea2<-osyt[,c("id","cyclec","groupa","groupb","embryo_trans.yn","fpregn2a","frz_out2a","babortf.yt","n_sacs","nfrz_num.y","trans_type2.y","frz_num.y","sac","frz_out2b")]
+fet<-as.data.frame(rbind(as.matrix(fea1),as.matrix(fea2)))
+fet$frz_num.x<-as.numeric(fet$frz_num.x)
+b<-subset(fet,fet$frz_num.x==4)
+b$frz_num.x<-2
+b$nfrz_num.x<-2
+b
+fet<-subset(fet,frz_num.x!=4)
+fet<-rbind(fet,b,b)
+fet$frz_num.x<-as.numeric(fet$frz_num.x)
+fet$transtype<-paste0(fet$frz_num.x,fet$trans_type2.x)
+fet$ftrans<-paste0(fet$transtype,fet$groupa)
+fet$nfrz_num.x<-as.numeric(fet$nfrz_num.x)
+fet$n_sacs.y<-as.numeric(fet$n_sacs.y)
+
+table(fet$frz_out1a)
+table(fet$babortf.xt)
+table(fet$n_sacs.y)
+table(fet$frz_num.x)
+table(fet$trans_type2.x)
+table(fet$frz_out1b)
+table(fet$transtype)
+table(fet$fpregn1a)
+
+scon2<-c("n_sacs.y","nfrz_num.x")
+cate2<-c("embryo_trans.xn","fpregn1a","frz_out1a","babortf.xt","frz_num.x","sac.y","frz_out1b")
+var2<-c(scon2,cate2)
+
+
+
+
+
+#数据再分层
+#osyt, ft, fet
+table(osyt$groupb)
+table(osyt$cyclec)
+table(osyt$transtype)
+table(osyt$gtrans)
+table(fet$transtype)
+
+yon<-subset(osyt,groupb=="conyoung" | groupb=="expriyoung")
+old<-subset(osyt,groupb=="conold" | groupb=="expriold")
+yont<-subset(ft,groupb=="conyoung" | groupb=="expriyoung")
+oldt<-subset(ft,groupb=="conold" | groupb=="expriold")
+yonf<-subset(fet,groupb=="conyoung" | groupb=="expriyoung")
+oldf<-subset(fet,groupb=="conold" | groupb=="expriold")
+
+
+fira<-subset(osyt,cyclec=="first_con" | cyclec=="first_expri")
+prea<-subset(osyt,cyclec=="previous_con" | cyclec=="previous_expri")
+firt<-subset(ft,cyclec=="first_con" | cyclec=="first_expri")
+pret<-subset(ft,cyclec=="previous_con" | cyclec=="previous_expri")
+firf<-subset(fet,cyclec=="first_con" | cyclec=="first_expri")
+pref<-subset(fet,cyclec=="previous_con" | cyclec=="previous_expri")
+
+
+
+
+
+
+
+
+
+
+
+
+#总人群——所有变量
+library(tableone)
+ba<-CreateTableOne(vars = var,data = osyt,strata = "groupa",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+ba1<-data.frame(print(ba,nonnormal = scon,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+ba1$name<-rownames(ba1)
+ba2<-data.frame(print(ba,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+ba2$name<-rownames(ba2)
+bat<-cbind(ba2,ba1)
+
+#总人群——周期数
+library(tableone)
+bb<-CreateTableOne(vars = var1,data = ft,strata = "groupa",
+                  factorVars = cate1,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+bb1<-data.frame(print(bb,nonnormal = scon1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+bb1$name<-rownames(bb1)
+bb2<-data.frame(print(bb,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+bb2$name<-rownames(bb2)
+bbt<-cbind(bb2,bb1)
+
+#总人群——冷冻周期数
+library(tableone)
+bc<-CreateTableOne(vars = var2,data = fet,strata = "groupa",
+                  factorVars = cate2,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+bc1<-data.frame(print(bc,nonnormal = scon2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+bc1$name<-rownames(bc1)
+bc2<-data.frame(print(bc,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+bc2$name<-rownames(bc2)
+bct<-cbind(bc2,bc1)
+
+
+#总人群及新鲜胚胎移植情况。
+bt<-rbind(bat,bbt,bct)
+
+
+
+#总人群——新鲜_妊娠
+catea<-c("pregno")
+library(tableone)
+bd<-CreateTableOne(vars = catea,data = osyt,strata = "gtrans",
+                  factorVars = catea,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+bd2<-data.frame(print(bd,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+bd2$name<-rownames(bd2)
+
+
+
+#总人群——冷冻_妊娠
+cateb<-c("fpregn1a")
+library(tableone)
+be<-CreateTableOne(vars = cateb,data = fet,strata = "ftrans",
+                  factorVars = cateb,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+be2<-data.frame(print(be,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+be2$name<-rownames(be2)
+
+
+
+
+#年轻人——所有变量
+library(tableone)
+younga<-CreateTableOne(vars = var,data = yon,strata = "groupb",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+younga1<-data.frame(print(younga,nonnormal = scon,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+younga1$name<-rownames(younga1)
+younga2<-data.frame(print(younga,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+younga2$name<-rownames(younga2)
+youngat<-cbind(younga2,younga1)
+
+
+#年轻人——周期数
+library(tableone)
+youngb<-CreateTableOne(vars = var1,data = yont,strata = "groupb",
+                  factorVars = cate1,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+youngb1<-data.frame(print(youngb,nonnormal = scon1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+youngb1$name<-rownames(youngb1)
+youngb2<-data.frame(print(youngb,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+youngb2$name<-rownames(youngb2)
+youngbt<-cbind(youngb2,youngb1)
+
+
+
+#年轻人———冷冻周期数
+library(tableone)
+youngc<-CreateTableOne(vars = var2,data = yonf,strata = "groupb",
+                  factorVars = cate2,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+youngc1<-data.frame(print(youngc,nonnormal = scon2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+youngc1$name<-rownames(youngc1)
+youngc2<-data.frame(print(youngc,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+youngc2$name<-rownames(youngc2)
+youngct<-cbind(youngc2,youngc1)
+
+
+#年轻人-总人群及新鲜胚胎移植情况。
+youngt<-rbind(youngat,youngbt,youngct)
+
+
+
+#年轻人——新鲜_妊娠
+catea<-c("pregno")
+library(tableone)
+youngd<-CreateTableOne(vars = catea,data = yon,strata = "gtrans",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+youngd2<-data.frame(print(youngd,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+youngd2$name<-rownames(youngd2)
+
+
+
+#年轻人——冷冻_妊娠
+cateb<-c("fpregn1a")
+library(tableone)
+younge<-CreateTableOne(vars = cateb,data = yonf,strata = "ftrans",
+                  factorVars = cateb,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+younge2<-data.frame(print(younge,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+younge2$name<-rownames(younge2)
+
+
+
+
+
+#老年人——所有变量
+library(tableone)
+olda<-CreateTableOne(vars = var,data = old,strata = "groupb",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+olda1<-data.frame(print(olda,nonnormal = scon,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+olda1$name<-rownames(olda1)
+olda2<-data.frame(print(olda,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+olda2$name<-rownames(olda2)
+oldat<-cbind(olda2,olda1)
+
+
+#老年人——周期数
+library(tableone)
+oldb<-CreateTableOne(vars = var1,data = oldt,strata = "groupb",
+                  factorVars = cate1,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+oldb1<-data.frame(print(oldb,nonnormal = scon1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+oldb1$name<-rownames(oldb1)
+oldb2<-data.frame(print(oldb,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+oldb2$name<-rownames(oldb2)
+oldbt<-cbind(oldb2,oldb1)
+
+
+
+#老年人———冷冻周期数
+library(tableone)
+oldc<-CreateTableOne(vars = var2,data = oldf,strata = "groupb",
+                  factorVars = cate2,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+oldc1<-data.frame(print(oldc,nonnormal = scon2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+oldc1$name<-rownames(oldc1)
+oldc2<-data.frame(print(oldc,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+oldc2$name<-rownames(oldc2)
+oldct<-cbind(oldc2,oldc1)
+
+#老年人-总人群及新鲜胚胎移植情况。
+oldt<-rbind(oldat,oldbt,oldct)
+
+
+#老年人——新鲜_妊娠
+catea<-c("pregno")
+library(tableone)
+oldd<-CreateTableOne(vars = catea,data = old,strata = "gtrans",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+oldd2<-data.frame(print(oldd,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+oldd2$name<-rownames(oldd2)
+
+
+
+#老年人——冷冻_妊娠
+cateb<-c("fpregn1a")
+library(tableone)
+olde<-CreateTableOne(vars = cateb,data = oldf,strata = "ftrans",
+                  factorVars = cateb,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+olde2<-data.frame(print(olde,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+olde2$name<-rownames(olde2)
+
+
+
+
+
+
+
+
+
+#第一个cylce——所有变量
+library(tableone)
+firsta<-CreateTableOne(vars = var,data = fira,strata = "cyclec",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+firsta1<-data.frame(print(firsta,nonnormal = scon,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firsta1$name<-rownames(firsta1)
+firsta2<-data.frame(print(firsta,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firsta2$name<-rownames(firsta2)
+firstat<-cbind(firsta2,firsta1)
+
+
+#第一个cylce——周期数
+library(tableone)
+firstb<-CreateTableOne(vars = var1,data = firt,strata = "cyclec",
+                  factorVars = cate1,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+firstb1<-data.frame(print(firstb,nonnormal = scon1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firstb1$name<-rownames(firstb1)
+firstb2<-data.frame(print(firstb,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firstb2$name<-rownames(firstb2)
+firstbt<-cbind(firstb2,firstb1)
+
+
+
+#第一个cylce———冷冻周期数
+library(tableone)
+firstc<-CreateTableOne(vars = var2,data = firf,strata = "cyclec",
+                  factorVars = cate2,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+firstc1<-data.frame(print(firstc,nonnormal = scon2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firstc1$name<-rownames(firstc1)
+firstc2<-data.frame(print(firstc,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firstc2$name<-rownames(firstc2)
+firstct<-cbind(firstc2,firstc1)
+
+
+#第一个cylce所有变量
+firstt<-rbind(firstat,firstbt,firstct)
+
+#第一个cylce——新鲜_妊娠
+catea<-c("pregno")
+library(tableone)
+firstd<-CreateTableOne(vars = catea,data = fira,strata = "gtrans",
+                  factorVars = catea,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+firstd2<-data.frame(print(firstd,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firstd2$name<-rownames(firstd2)
+
+
+#第一个cylce——冷冻_妊娠
+cateb<-c("fpregn1a")
+library(tableone)
+firste<-CreateTableOne(vars = cateb,data = firf,strata = "ftrans",
+                  factorVars = cateb,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+firste2<-data.frame(print(firste,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+firste2$name<-rownames(firste2)
+
+
+
+
+
+#>1个cycle——所有变量
+library(tableone)
+previousa<-CreateTableOne(vars = var,data = prea,strata ="cyclec",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+previousa1<-data.frame(print(previousa,nonnormal = scon,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousa1$name<-rownames(previousa1)
+previousa2<-data.frame(print(previousa,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousa2$name<-rownames(previousa2)
+previousat<-cbind(previousa2,previousa1)
+
+
+#>1个cycle——周期数
+library(tableone)
+previousb<-CreateTableOne(vars = var1,data = pret,strata = "cyclec",
+                  factorVars = cate1,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+previousb1<-data.frame(print(previousb,nonnormal = scon1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousb1$name<-rownames(previousb1)
+previousb2<-data.frame(print(previousb,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousb2$name<-rownames(previousb2)
+previousbt<-cbind(previousb2,previousb1)
+
+
+
+#>1个cycle———冷冻周期数
+library(tableone)
+previousc<-CreateTableOne(vars = var2,data = pref,strata = "cyclec",
+                  factorVars = cate2,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+previousc1<-data.frame(print(previousc,nonnormal = scon2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousc1$name<-rownames(previousc1)
+previousc2<-data.frame(print(previousc,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousc2$name<-rownames(previousc2)
+previousct<-cbind(previousc2,previousc1)
+
+
+
+#>1个cycle——总变量
+previoust<-rbind(previousat,previousbt,previousct)
+
+
+#>1个cycle——新鲜_妊娠
+catea<-c("pregno")
+library(tableone)
+previousd<-CreateTableOne(vars = catea,data = prea,strata = "gtrans",
+                  factorVars = cate,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+previousd2<-data.frame(print(previousd,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previousd2$name<-rownames(previousd2)
+
+
+
+#>1个cylce——冷冻_妊娠
+cateb<-c("fpregn1a")
+library(tableone)
+previouse<-CreateTableOne(vars = cateb,data = pref,strata = "ftrans",
+                  factorVars = cateb,includeNA = FALSE,test = TRUE,
+                  addOverall = TRUE)
+previouse2<-data.frame(print(previouse,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+previouse2$name<-rownames(previouse2)
+
+
+out<-list("总人群_总"=bt,"总人群_新鲜"=bd2,"总人群_冷冻"=be2,
+          "young_总"=youngt,"young_新鲜"=youngd2,"young_冷冻"=younge2,
+          "old_总"=oldt,"old_新鲜"=oldd2,"old_冷冻"=olde2,
+          "first_总"=firstt,"first_新鲜"=firstd2,"first_冷冻"=firste2,
+          "previous_总"=previoust,"previous_新鲜"=previousd2,"previous_冷冻"=previouse2)
+write.xlsx(out,"D:/省医课题资料/5010RCT数据/结果-1026新/20231107_RCT_resultt2.xlsx")
+
+
+
+
+dat<-list("总人群数据"=osyt,"每个周期一行的数据"=ft,"冷冻周期数据"=fet)
+#write.xlsx(dat,"D:/Rdata/20231026_RCT_data.xlsx")
+write.xlsx(dat,"D:/省医课题资料/5010RCT数据/结果-1026新/20231107_RCT_data.xlsx")
+
+library(stats)
+a<-matrix(c(9,32,13,22),nrow=2)
+chisq.test(a)
+
+
+b<-matrix(c(13,51,24,79),nrow=2)
+fisher.test(b)
+chisq.test(b)
+
+
+c<-matrix(c(9,66,18,67),nrow=2)
+chisq.test(c)
+fisher.test(c)
+
+d<-matrix(c(23,23,18,35),nrow=2)
+chisq.test(d)
+
+e<-matrix(c(4,16,2,21),nrow=2)
+fisher.test(e)
+chisq.test(e)
+
+f<-matrix(c(7,5,1,7),nrow=2)
+fisher.test(f)
+
+g<-matrix(c(8,14,4,14),nrow=2)
+fisher.test(g)
+
+
+h<-matrix(c(6,8,3,3),nrow=2)
+fisher.test(h)
+
+```
+
+
+
+#第一次妊娠率计算相关变量整理202307-202308
+```{r}
+rctha<-subset(rcth,agei>=40 | AMH<1.2 | AFC>=5)
+dim(rctha)
+
+#用于临床妊娠率计算代码。
+var<-c("centera","groupa","agei","BMI","inferity_year","inferity",
+       "AFC","tt_oocyte","t_oocyte","tocys",
+       "embryo","tembryo","fre_embryo","embryo_trans.x","embryo_trans.y",
+       "pregn","fpregn1","fpregn2","frzpreg","frepreg","tpreg","liveb")
+
+cate<-c("centera","groupa","inferity","t_oocyte","tocys",
+        "embryo","tembryo","fre_embryo","embryo_trans.x","embryo_trans.y",
+        "pregn","fpregn1","fpregn2","frzpreg","frepreg","tpreg","liveb")
+
+con<-c("agei","BMI","inferity_year","AFC","tt_oocyte")
+
+
+
+#中心名、组别，是否取卵，移植人数，移植次数，新鲜胚胎移植，冷冻移植1，冷冻移植2，
+#新鲜妊娠，冷冻妊娠1，冷冻妊娠2，冷冻妊娠次数，临床妊娠人数，妊娠次数，活产
+data1<-rctha[,c("id","age","centera","groupa","t_oocyte","embryo",
+               "fre_embryo","embryo_trans.x","embryo_trans.y",
+               "pregn","fpregn1","fpregn2","liveb")]
+
+dim(data1)  #193
+
+
+gdpe<-read.xlsx("D:/Rdata/20230725_RCT.xlsx",sheet="gdp_le")
+dim(gdpe)    #7
+
+table(data1$pregn)
+table(data1$fpregn1)
+table(data1$fpregn2)
+
+#是否取卵
+gdpe$t_oocyte[is.na(gdpe$捡卵日期)==FALSE]<-"是"
+#成功获卵
+gdpe$tocys[is.na(gdpe$获OCCC数)>0]<-"成功取卵"
+
+summary(gdpe$age)
+table(gdpe$centera)
+table(gdpe$groupa)
+table(gdpe$t_oocyte)
+gdpe$embryo<-gdpe$fre_embryo
+gdpe$embryo_trans.x<-NA
+gdpe$embryo_trans.y<-NA
+gdpe$fpregn1<-NA
+gdpe$fpregn2<-NA
+table(gdpe$liveb)
+table(gdpe$pregn)
+table(gdpe$fre_embryo)
+
+
+#中心名、组别，是否取卵，移植人数，移植次数，新鲜胚胎移植，冷冻移植1，冷冻移植2，
+#新鲜妊娠，冷冻妊娠1，冷冻妊娠2，冷冻妊娠次数，临床妊娠人数，妊娠次数，活产
+data2<-gdpe[,c("id","age","centera","groupa","t_oocyte","embryo",
+               "fre_embryo","embryo_trans.x","embryo_trans.y",
+               "pregn","fpregn1","fpregn2","liveb")]
+dim(data2)
+
+
+
+
+
+
+
+
+
+
+gdpc<-read.xlsx("D:/Rdata/20230725_RCT.xlsx",sheet="gdp_control")
+dim(gdpc)    #18
+
+summary(gdpc$age)
+table(gdpc$centera)
+table(gdpc$groupa)
+table(gdpc$t_oocyte)
+table(gdpc$fre_embryo)
+gdpc$embryo<-gdpc$fre_embryo
+gdpc$embryo_trans.x<-NA
+gdpc$embryo_trans.y<-NA
+gdpc$fpregn1<-NA
+gdpc$fpregn2<-NA
+table(gdpc$liveb)
+
+
+#中心名、组别，是否取卵，移植人数，移植次数，新鲜胚胎移植，冷冻移植1，冷冻移植2，
+#新鲜妊娠，冷冻妊娠1，冷冻妊娠2，冷冻妊娠次数，临床妊娠人数，妊娠次数，活产
+data3<-gdpc[,c("id","age","centera","groupa","t_oocyte","embryo",
+               "fre_embryo","embryo_trans.x","embryo_trans.y",
+               "pregn","fpregn1","fpregn2","liveb")]
+dim(data3)
+
+
+
+
+
+
+
+
+
+
+
+sysue<-read.xlsx("D:/Rdata/20230725_RCT.xlsx",sheet="sysu_le")
+dim(sysue)   #49
+
+summary(sysue$age)
+table(sysue$centera)
+table(sysue$groupa)
+table(sysue$t_oocyte)
+
+sysue$embryo_trans.x[is.na(sysue$FET_transnum)==FALSE]<-"是"
+sysue$embryo_trans.y[sysue$FET_out=="2次FET均未妊娠"]<-"是"
+
+sysue$fre_embryo[sysue$pregn=="临床妊娠" | sysue$pregn=="未妊娠"]<-"是"
+
+sysue$embryo[sysue$fre_embryo=="是" | sysue$embryo_trans.x=="是"]<-"胚胎移植人数"
+
+table(sysue$FET_out)
+table(sysue$FET_sac)
+sysue$fpregn1[sysue$FET_out=="FET临床妊娠活单胎" | sysue$FET_out=="FET临床妊娠双胎活单胎"]<-"是"
+sysue$fpregn2<-NA
+
+sysue$liveb
+sysue$liveb[sysue$FET_out=="FET临床妊娠活单胎" | sysue$FET_out=="FET临床妊娠双胎活单胎"]<-"活单胎"
+
+#中心名、组别，是否取卵，移植人数，移植次数，新鲜胚胎移植，冷冻移植1，冷冻移植2，
+#新鲜妊娠，冷冻妊娠1，冷冻妊娠2，冷冻妊娠次数，临床妊娠人数，妊娠次数，活产
+data4<-sysue[,c("id","age","centera","groupa","t_oocyte","embryo",
+                "fre_embryo","embryo_trans.x","embryo_trans.y",
+                "pregn","fpregn1","fpregn2","liveb")]
+dim(data4)
+
+
+
+
+
+sysuc<-read.xlsx("D:/Rdata/20230725_RCT.xlsx",sheet="sysu_control")
+dim(sysuc)   #57
+
+summary(sysuc$age)
+table(sysuc$centera)
+table(sysuc$groupa)
+table(sysuc$t_oocyte)
+
+sysuc$embryo_trans.x[is.na(sysuc$FET_transnum)==FALSE]<-"是"
+
+sysuc$embryo_trans.y[sysuc$FET_out=="2次FET均未妊娠"]<-"是"
+sysuc$embryo_trans.y[sysuc$FET_out=="2次FET未妊娠，生化妊娠"]<-"是"
+sysuc$embryo_trans.y[sysuc$FET_out=="第1次FET未妊娠，第二次FET生化妊娠"]<-"是"
+sysuc$embryo_trans.y[sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠活单胎"]<-"是"
+sysuc$embryo_trans.y[sysuc$FET_out=="第1和3次FET未妊娠；第2次FET生化妊娠"]<-"是是"
+
+
+sysuc$fre_embryo[sysuc$pregn=="临床妊娠" | sysuc$pregn=="未妊娠" | sysuc$pregn=="生化妊娠" ]<-"是"
+
+sysuc$embryo[sysuc$fre_embryo=="是" | sysuc$embryo_trans.x=="是" | sysuc$embryo_trans.y=="是" | sysuc$embryo_trans.y=="是是"]<-"胚胎移植人数"
+
+
+table(sysuc$FET_out)
+table(sysuc$FET_sac)
+sysuc$fpregn1[sysuc$FET_out=="FET临床妊娠单活胎" | sysuc$FET_out=="FET临床妊娠单胎活单胎；有冻胚"]<-"是"
+sysuc$fpregn1[sysuc$FET_out=="FET临床妊娠单胎早期自然流产" | sysuc$FET_out=="FET临床妊娠活单胎"]<-"是"
+sysuc$fpregn1[sysuc$FET_out=="FET临床妊娠早期自然流产" | sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠单胎活单胎"]<-"是"
+sysuc$fpregn1[sysuc$FET_out=="FET临床妊娠早期自然流产"]<-"是"
+
+sysuc$fpregn2[sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠单胎活单胎"]<-"是"
+sysuc$fpregn2[sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠活单胎"]<-"是"
+
+table(sysuc$liveb)
+sysuc$liveb[sysuc$FET_out=="FET临床妊娠单活胎" | sysuc$FET_out=="FET临床妊娠单胎活单胎；有冻胚"]<-"活单胎"
+sysuc$liveb[sysuc$FET_out=="FET临床妊娠活单胎" | sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠单胎活单胎"]<-"活单胎"
+sysuc$liveb[sysuc$FET_out=="第一次FET未妊娠；第二次FET临床妊娠活单胎"]<-"活单胎"
+
+
+#中心名、组别，是否取卵，移植人数，移植次数，新鲜胚胎移植，冷冻移植1，冷冻移植2，
+#新鲜妊娠，冷冻妊娠1，冷冻妊娠2，冷冻妊娠次数，临床妊娠人数，妊娠次数，活产
+data5<-sysuc[,c("id","age","centera","groupa","t_oocyte","embryo",
+                "fre_embryo","embryo_trans.x","embryo_trans.y",
+                "pregn","fpregn1","fpregn2","liveb")]
+dim(data5)
+
+
+
+datat<-rbind(data1,data2,data3,data4,data5)
+dim(datat)
+
+
+datat$ageg[datat$age>=40 & datat$groupa=="control"]<-"control+age ≥ 40"
+datat$ageg[datat$age>=40 & datat$groupa=="expri"]<-"experiment+age ≥ 40"
+datat$ageg[datat$age<40 & datat$groupa=="control"]<-"control+age < 40"
+datat$ageg[datat$age<40 & datat$groupa=="expri"]<-"experiment+age < 40"
+table(datat$ageg)
+
+
+#是否取卵
+table(datat$t_oocyte)
+datat$toocyte[datat$t_oocyte=="是"]<-"取卵周期数"
+table(datat$toocyte)
+
+
+#胚胎移植人数
+table(datat$embryo)
+datat$embryot[datat$embryo=="胚胎移植人数"]<-"胚胎移植人数"
+datat$embryot[datat$embryo=="是"]<-"胚胎移植人数"
+table(datat$embryot)
+
+#胚胎移植次数
+datat$emb<-paste0(datat$fre_embryo,datat$embryo_trans.x,datat$embryo_trans.y)
+table(datat$emb)
+datat$tembryot[datat$emb=="不是NA" | datat$emb=="是NANA" | datat$emb=="否是NA"]<-"胚胎移植1次"
+datat$tembryot[datat$emb=="不是是" | datat$emb=="否是是" | datat$emb=="是是NA"]<-"胚胎移植2次"
+datat$tembryot[datat$emb=="是是是" | datat$emb=="否是是是" ]<-"胚胎移植3次"
+table(datat$tembryot)
+
+#新鲜胚胎移植人数/次数
+datat$fre_embryot[datat$fre_embryo=="是"]<-"新鲜胚胎移植人数/次数"
+
+#冷冻胚胎移植次数
+table(datat$embryo_trans.x)
+table(datat$embryo_trans.y)
+datat$frz_embryo[datat$embryo_trans.x=="是" | datat$embryo_trans.y=="是"]<-"冷冻胚胎移植1次"
+datat$frz_embryo[datat$embryo_trans.x=="是" & datat$embryo_trans.y=="是"]<-"冷冻胚胎移植2次"
+datat$frz_embryo[datat$embryo_trans.x=="是" & datat$embryo_trans.y=="是是"]<-"冷冻胚胎移植3次"
+table(datat$frz_embryo)
+
+
+#冷冻胚胎移植妊娠次数 frzpreg
+datat$frzpreg[datat$fpregn1=="是" | datat$fpregn2=="是"]<-"冷冻胚胎移植妊娠1次"
+datat$frzpreg[datat$fpregn1=="是" & datat$fpregn2=="是"]<-"冷冻胚胎移植妊娠2次"
+table(datat$frzpreg)
+
+#冷冻妊娠人数
+datat$frzpreg_num[datat$frzpreg=="冷冻胚胎移植妊娠1次" | datat$frzpreg=="冷冻胚胎移植妊娠2次"]<-"冷冻胚胎妊娠人数"
+
+#新鲜胚胎移植临床妊娠
+table(datat$pregn)
+datat$preg[datat$pregn=="临床妊娠"]<-"是"
+datat$preg[datat$pregn=="是"]<-"是"
+table(datat$preg)
+
+datat$frepreg[datat$preg=="是"]<-"新鲜胚胎妊娠人数/次数"
+table(datat$frepreg)
+
+#临床妊娠人数
+table(datat$fpregn1)
+table(datat$fpregn2)
+
+datat$pregt[datat$preg=="是" | datat$fpregn1=="是" | datat$fpregn2=="是"]<-"临床妊娠人数"
+table(datat$pregt)
+
+#临床妊娠次数
+datat$tpreg<-paste0(datat$preg,datat$fpregn1,datat$fpregn2)
+table(datat$tpreg)
+
+datat$tpregt[datat$tpreg=="NANA是" | datat$tpreg=="NA是NA" | datat$tpreg=="是NANA"]<-"临床妊娠1次"
+datat$tpregt[datat$tpreg=="NA是是"| datat$tpreg=="是是NA"]<-"临床妊娠2次"
+table(datat$tpregt)
+
+
+table(datat$liveb)
+datat$live[datat$liveb=="活产" | datat$liveb=="活单胎" | datat$liveb=="活双胎" | datat$liveb=="剖腹产" |  datat$liveb=="阴道产"]<-"活产"
+table(datat$live)
+
+
+
+
+var<-c("centera","groupa","age","toocyte","embryot","tembryot","fre_embryot","frz_embryo",
+       "frepreg","frzpreg","frzpreg_num","pregt","tpregt","live")
+catev<-c("centera","groupa","toocyte","embryot","tembryot","fre_embryot","frz_embryo",
+         "frepreg","frzpreg","frzpreg_num","pregt","tpregt","live")
+
+library(tableone)
+t1<-CreateTableOne(data = datat,vars = var,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+t1a<-print(t1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE)
+
+View(t1a)
+
+
+t2<-CreateTableOne(data = datat,vars = var,factorVars = catev,strata = "ageg",includeNA = TRUE,addOverall = TRUE)
+t2a<-print(t2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE)
+
+View(t2a)
+
+
+
+tta<-data.frame(cbind(t1a,t2a))
+tta$name<-rownames(tta)
+View(tta)
+write.xlsx(tta,"D:/Rdata/20230725_rct_rate.xlsx")
+```
+
+
+
+
+#分中心描述性分析代码
+```{r}
+
+table(datat$centera)
+dg<-subset(datat,centera=="dg")
+gdp<-subset(datat,centera=="gdp")
+gzh<-subset(datat,centera=="gzh")
+syh2<-subset(datat,centera=="syh2")
+sz<-subset(datat,centera=="sz")
+zj<-subset(datat,centera=="zj")
+
+
+
+c1<-CreateTableOne(var,data = dg,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c1r<-data.frame(print(c1,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c1r$name<-rownames(c1r)
+c1r$center<-rep("东莞市人民医院",nrow(c1r))
+
+
+c2<-CreateTableOne(var,data = gdp,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c2r<-data.frame(print(c2,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c2r$name<-rownames(c2r)
+c2r$center<-rep("广东省人民医院",nrow(c2r))
+
+
+
+c3<-CreateTableOne(var,data = gzh,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c3r<-data.frame(print(c3,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c3r$name<-rownames(c3r)
+c3r$center<-rep("贵州医科大学附属医学",nrow(c3r))
+
+
+
+c4<-CreateTableOne(var,data = syh2,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c4r<-data.frame(print(c4,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c4r$name<-rownames(c4r)
+c4r$center<-rep("孙逸仙纪念医院",nrow(c4r))
+
+
+
+c5<-CreateTableOne(var,data = sz,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c5r<-data.frame(print(c5,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c5r$name<-rownames(c5r)
+c5r$center<-rep("深圳市妇幼保健院",nrow(c5r))
+
+
+
+c6<-CreateTableOne(var,data = zj,factorVars = catev,strata = "groupa",includeNA = TRUE,addOverall = TRUE)
+c6r<-data.frame(print(c6,showAllLevels = TRUE,contDigits = 2,printToggle = FALSE))
+c6r$name<-rownames(c6r)
+c6r$center<-rep("浙江省人民医院",nrow(c6r))
+
+
+ctr<-rbind(c1r,c2r,c3r,c4r,c5r,c6r)
+
+
+dt<-list("tta"=tta,"ctr"=ctr)
+write.xlsx(dt,"D:/Rdata/20230721_rct_result.xlsx")
+
+```
+
+
+
+
+##根据某个直径的卵泡出现的日期分组
+```{r}
+df09<-subset(rctb2,dperiod=="D09")
+df10<-subset(rctb2,dperiod=="D10")
+df14<-subset(rctb2,dperiod=="D14")
+df16<-subset(rctb2,dperiod=="D16")
+df18<-subset(rctb2,dperiod=="D18")
+
+
+dim(df09)
+dim(df10)
+dim(df14)
+dim(df16)
+dim(df18)
+
+
+con<-c("fol9","fol10","fol14","fol16","fol18",
+       "FSH2","LH2","E2","P","T","T_fo18")
+cate<-c("fo9b","fo10b","fo14b","fo16b","fo18b","FSHb","LHb","Eb","Pb","Tb","TFb")
+var<-c("fol9","fo9b","fol10","fo10b","fol14","fo14b","fol16","fo16b",
+       "fol18","fo18b","FSH2","FSb","LH2","LHb","E2","Eb","P","Pb","T","Tb","T_fo18","TFb")
+
+
+f1<-CreateTableOne(var,factorVars = cate,data = df09,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+f1r<-data.frame(print(f1,showAllLevels = TRUE))
+f1r$name<-rownames(f1r)
+f1r$data<-rep("D09",nrow(f1r))
+
+
+f2<-CreateTableOne(var,factorVars = cate,data = df10,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+f2r<-data.frame(print(f2,showAllLevels = TRUE))
+f2r$name<-rownames(f2r)
+f2r$data<-rep("D10",nrow(f2r))
+
+
+f3<-CreateTableOne(var,factorVars = cate,data = df14,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+f3r<-data.frame(print(f3,showAllLevels = TRUE))
+f3r$name<-rownames(f3r)
+f3r$data<-rep("D14",nrow(f3r))
+
+
+f4<-CreateTableOne(var,factorVars = cate,data = df16,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+f4r<-data.frame(print(f4,showAllLevels = TRUE))
+f4r$name<-rownames(f4r)
+f4r$data<-rep("D16",nrow(f4r))
+
+
+f5<-CreateTableOne(var,factorVars = cate,data = df18,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+f5r<-data.frame(print(f5,showAllLevels = TRUE))
+f5r$name<-rownames(f5r)
+f5r$data<-rep("D18",nrow(f5r))
+
+
+f6<-CreateTableOne(var,factorVars = cate,data = df18,strata = "ageg",includeNA =  FALSE,addOverall = TRUE)
+f6r<-data.frame(print(f6,showAllLevels = TRUE))
+f6r$name<-rownames(f6r)
+f6r$data<-rep("D18",nrow(f6r))
+
+
+#ftr<-rbind(f1r,f2r,f3r,f4r,f5r)
+#write.xlsx(ftr,"D:/Rdata/20230714_d_follic_result.xlsx")
+
+
+#dfs<-read.xlsx("D:/Rdata/20230714_d_follic_result.xlsx",sheet = "Sheet3")
+dfs$Mean<-as.numeric(dfs$Mean)
+dfs$SD<-as.numeric(dfs$SD)
+
+dfs1<-subset(dfs,group=="control" | group=="expri")
+
+fsh2d<-subset(dfs1,me=="FSH2")
+lh2d<-subset(dfs1,me=="LH2")
+e2d<-subset(dfs1,me=="E2")
+td<-subset(dfs1,me=="T")
+pd<-subset(dfs1,me=="P")
+
+dim(fsh2d)
+dim(lh2d)
+dim(e2d)
+dim(td)
+dim(pd)
+
+
+
+
+ggplot(e2d,aes(D,Mean,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  geom_errorbar(aes(ymin=Mean-SD,
+                    ymax=Mean+SD),
+                width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(8,19),
+                     breaks = c(9,10,14,16,18),
+                     labels = c("D9","D10","D14","D16","D18"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='E2')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.94),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))+
+  geom_text(x=9,y=150,label="*",cex=5,color="black")+
+  geom_text(x=10,y=725,label="*",cex=5,color="black")+
+  geom_text(x=14,y=1127,label="*",cex=5,color="black")+
+  geom_text(x=16,y=1540,label="*",cex=5,color="black")+
+  geom_text(x=18,y=2360,label="*",cex=5,color="black")
+
+
+
+ggplot(td,aes(D,Mean,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  geom_errorbar(aes(ymin=Mean-SD,
+                    ymax=Mean+SD),
+                width=0.25,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(8,19),
+                     breaks = c(9,10,14,16,18),
+                     labels = c("D9","D10","D14","D16","D18"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='T')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.94),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(pd,aes(D,Mean,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=Mean-SD,
+  #                  ymax=Mean+SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(8,19),
+                     breaks = c(9,10,14,16,18),
+                     labels = c("D9","D10","D14","D16","D18"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='P')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+
+ggplot(fsh2d,aes(D,Mean,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=Mean-SD,
+  #                  ymax=Mean+SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(8,19),
+                     breaks = c(9,10,14,16,18),
+                     labels = c("D9","D10","D14","D16","D18"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='FSH2')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(lh2d,aes(D,Mean,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=Mean-SD,
+  #                 ymax=Mean+SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(8,19),
+                     breaks = c(9,10,14,16,18),
+                     labels = c("D9","D10","D14","D16","D18"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='LH2')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+
+
+
+df18t<-read.xlsx("D:/Rdata/20230712_rct_results.xlsx",sheet = "Sheet2")
+
+ggplot(df18t,aes(x=X1,y=T_fo18))+
+  geom_bar(stat = "identity",fill="skyblue",color="black",width = 0.5)+
+  geom_errorbar(aes(ymin=T_fo18-T_fo18_sd,ymax=T_fo18+T_fo18_sd),width=0.2)+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 14,color = 'black'))+
+  labs(x="Group",y="T/Number of follice ≥ 18 mm")
+  
+
+
+
+
+a<-c(1,2)
+b<-c(3,6)
+y1<-c(1.3,1.3)
+y2<-c(2.55,2.55)
+l1<-data.frame(a,y1)
+l2<-data.frame(b,y2)
+
+ggplot(df18t,aes(x=X2,y=T_fo18))+
+  geom_bar(stat = "identity",color="black",width = 0.7,fill=c("skyblue","red","skyblue","skyblue","red","red"))+
+  geom_errorbar(aes(ymin=T_fo18-T_fo18_sd,ymax=T_fo18+T_fo18_sd),width=0.5)+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank(),
+        #legend.title = element_blank(),
+        #legend.text = element_text(family = 'serif'),
+        #legend.position = "bottom",
+        #legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 14,color = 'black'))+
+  scale_x_continuous(limits = c(0.5,6.5),
+                     breaks = c(1,2,3,4,5,6),
+                     labels = c("Control","Expri","C39","C40","E39","E40"))+
+  scale_y_continuous(limits=c(0,2.7),breaks = c(0,0.5,1,1.5,2,2.5))+
+  labs(x="Group",y="T/Number of follice ≥ 18 mm")+
+  geom_line(data = l1,aes(x=a,y=y1))+
+  geom_line(data = l2,aes(x=b,y=y2))+
+  geom_text(x=1.5,y=1.35,label="NS",cex=3,color="black",family = 'serif')+
+  geom_text(x=4.5,y=2.60,label="NS",cex=3,color="black",family = 'serif')
+
+
+
+#左侧取卵数	右侧取卵数	总取卵数	可利用胚胎数	
+#优质胚胎数	卵裂胚数	囊胚数	雌二醇 (pmol/L)	
+#FSH (IU/L)	LH (IU/L)	
+#孕酮 (nmol/L)	睾酮 (nmol/L)	催乳素 (uIU/mL)	AMH (ng/L)
+
+
+
+#base<-read.xlsx("D:/Rdata/20230712_rct_results.xlsx",sheet = "Sheet3")
+#dim(base)
+
+
+ggplot(base,aes(x=X2,y=testos))+
+  geom_bar(stat = "identity",fill="skyblue",color="black",width = 0.7)+
+  geom_errorbar(aes(ymin=testos-testos_SD,ymax=testos+testos_SD),width=0.2)+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.15,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 12,color = 'black'))+
+  scale_x_continuous(limits = c(0.5,6.5),
+                     breaks = c(1,2,3,4,5,6),
+                     labels = c("Control","Expri","C39","C40","E39","E40"))+
+  labs(x="Group",y="T (nmol/L)")
+
+
+
+
+library(ggsignif)
+
+a<-c(1,2)
+b<-c(3,6)
+y1<-c(1.85,1.85)
+y2<-c(1.9,1.9)
+l1<-data.frame(a,y1)
+l2<-data.frame(b,y2)
+
+ggplot(base,aes(x=X2,y=testos))+
+  geom_bar(stat = "identity",color="black",width = 0.7,fill=c("skyblue","red","skyblue","skyblue","red","red"))+
+  geom_errorbar(aes(ymin=testos-testos_SD,ymax=testos+testos_SD),width=0.2)+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank(),
+        #legend.title = element_blank(),
+        #legend.text = element_text(family = 'serif'),
+        #legend.position = "bottom",
+        #legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 14,color = 'black'))+
+  scale_x_continuous(limits = c(0.5,6.5),
+                    breaks = c(1,2,3,4,5,6),
+                    labels = c("Control","Expri","C39","C40","E39","E40"))+
+  scale_y_continuous(limits=c(0,2.0))+
+  labs(x="Group",y="T (nmol/L)")+
+  geom_line(data = l1,aes(x=a,y=y1))+
+  geom_line(data = l2,aes(x=b,y=y2))+
+  geom_text(x=1.5,y=1.9,label="NS",cex=3,color="black",family = 'serif')+
+  geom_text(x=4.5,y=1.95,label="NS",cex=3,color="black",family = 'serif')
+
+
+
+a<-c(1,2)
+b<-c(3,6)
+y1<-c(720,720)
+y2<-c(870,870)
+l1<-data.frame(a,y1)
+l2<-data.frame(b,y2)
+
+ggplot(base,aes(x=X2,y=estr))+
+  geom_bar(stat = "identity",color="black",width = 0.7,fill=c("skyblue","red","skyblue","skyblue","red","red"))+
+  geom_errorbar(aes(ymin=estr-estr_SD,ymax=estr+estr_SD),width=0.2)+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank(),
+        #legend.title = element_blank(),
+        #legend.text = element_text(family = 'serif'),
+        #legend.position = "bottom",
+        #legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 14,color = 'black'))+
+  scale_x_continuous(limits = c(0.5,6.5),
+                     breaks = c(1,2,3,4,5,6),
+                     labels = c("Control","Expri","C39","C40","E39","E40"))+
+  #scale_y_continuous(limits=c(0,1000))+
+  labs(x="Group",y="Estradiol (pmol/L)")+
+  geom_line(data = l1,aes(x=a,y=y1))+
+  geom_line(data = l2,aes(x=b,y=y2))+
+  geom_text(x=1.5,y=730,label="NS",cex=3,color="black",family = 'serif')+
+  geom_text(x=4.5,y=880,label="NS",cex=3,color="black",family = 'serif')
+
+```
+
+
+#按随访时间-LMP的时间进行计算与分组_数据分析与画图
+```{r}
+library(openxlsx)
+rctcoh<-read.xlsx("D:Rdata/20230708_rct.xlsx",sheet = "FSH-HMG连续用药计")
+
+rctcoh$FSH2<-as.numeric(rctcoh$FSH2)
+rctcoh$LH2<-as.numeric(rctcoh$LH2)
+rctcoh$E2<-as.numeric(rctcoh$E2)
+rctcoh$P<-as.numeric(rctcoh$P)
+rctcoh$T<-as.numeric(rctcoh$T)
+
+rctcoh$follic9<-as.numeric(rctcoh$follic9)
+rctcoh$follic10<-as.numeric(rctcoh$follic10)
+rctcoh$follic14<-as.numeric(rctcoh$follic14)
+rctcoh$follic16<-as.numeric(rctcoh$follic16)
+rctcoh$follic18<-as.numeric(rctcoh$follic18)
+
+summary(rctcoh$FSH2)
+summary(rctcoh$LH2)
+summary(rctcoh$E2)
+summary(rctcoh$P)
+summary(rctcoh$T)
+
+summary(rctcoh$follic9)
+summary(rctcoh$follic10)
+summary(rctcoh$follic14)
+summary(rctcoh$follic16)
+summary(rctcoh$follic18)
+
+table(rctcoh$period)
+
+
+rctcoh$T_fo18<-ifelse(rctcoh$T>=0 & rctcoh$follic18>0,rctcoh$T/rctcoh$follic18,NA)
+table(rctcoh$T_fo18,useNA = "always")
+
+
+#根据某个直径的卵泡出现的日期进行分组。
+#直径< 10mm的总卵泡数（个）      follic9
+#14mm＞直径≥10mm的总卵泡数（个） follic10			
+#16mm＞直径≥14mm的总卵泡数（个） follic14
+#18mm＞直径≥16mm的总卵泡数（个） follic16
+#直径≥18mm的总卵泡数（个）       follic18
+
+#22*17
+#14-15
+#3月5日
+#2月4日
+#5月6日
+#44990.00 
+#44961.00 
+#45052.00 
+
+rctcoh$fol9<-ifelse(is.na(rctcoh$follic9)==TRUE,0,rctcoh$follic9)
+rctcoh$fol9[rctcoh$fol9=="NA"]<-NA
+rctcoh$fol9[rctcoh$fol9==44990]<-4
+rctcoh$fol9[rctcoh$fol9==44961]<-3
+rctcoh$fol9[rctcoh$fol9==45052]<-5.5
+rctcoh$fol9[rctcoh$fol9=="14-15"]<-14.5
+rctcoh$fol9[rctcoh$fol9=="22*17"]<-1
+
+rctcoh$fol10<-ifelse(is.na(rctcoh$follic10)==TRUE,0,rctcoh$follic10)
+rctcoh$fol14<-ifelse(is.na(rctcoh$follic14)==TRUE,0,rctcoh$follic14)
+rctcoh$fol16<-ifelse(is.na(rctcoh$follic16)==TRUE,0,rctcoh$follic16)
+rctcoh$fol18<-ifelse(is.na(rctcoh$follic18)==TRUE,0,rctcoh$follic18)
+
+summary(rctcoh$fol9)
+summary(rctcoh$fol10)
+summary(rctcoh$fol14)
+summary(rctcoh$fol16)
+summary(rctcoh$fol18)
+
+
+rctcoh$dperiod[rctcoh$fol9>0 & rctcoh$fol10==0 & rctcoh$fol14==0 & rctcoh$fol16==0 & rctcoh$fol18==0]<-"D09"
+rctcoh$dperiod[rctcoh$fol10>0 & rctcoh$fol14==0 & rctcoh$fol16==0 & rctcoh$fol18==0]<-"D10"
+rctcoh$dperiod[rctcoh$fol14>0 & rctcoh$fol16==0 & rctcoh$fol18==0]<-"D14"
+rctcoh$dperiod[rctcoh$fol16>0 & rctcoh$fol18==0]<-"D16"
+rctcoh$dperiod[rctcoh$fol18>0]<-"D18"
+table(rctcoh$dperiod,useNA = "always")
+
+
+rctb1<-rcth0[,c("id","ageg","groupa","age","centera")]
+
+library(dplyr)
+rctb2<-left_join(rctcoh,rctb1,by="id") #901
+
+rctb2$gf<-paste0(rctb2$groupa,rctb2$period)
+
+
+rctb2$fo9b<-ifelse(is.na(rctb2$follic9)==TRUE,"TRUE","FALSE")
+rctb2$fo10b<-ifelse(is.na(rctb2$follic10)==TRUE,"TRUE","FALSE")
+rctb2$fo14b<-ifelse(is.na(rctb2$follic14)==TRUE,"TRUE","FALSE")
+rctb2$fo16b<-ifelse(is.na(rctb2$follic16)==TRUE,"TRUE","FALSE")
+rctb2$fo18b<-ifelse(is.na(rctb2$follic18)==TRUE,"TRUE","FALSE")
+rctb2$FSb<-ifelse(is.na(rctb2$FSH2)==TRUE,"TRUE","FALSE")
+rctb2$LHb<-ifelse(is.na(rctb2$LH2)==TRUE,"TRUE","FALSE")
+rctb2$Eb<-ifelse(is.na(rctb2$E2)==TRUE,"TRUE","FALSE")
+rctb2$Pb<-ifelse(is.na(rctb2$P)==TRUE,"TRUE","FALSE")
+rctb2$Tb<-ifelse(is.na(rctb2$T)==TRUE,"TRUE","FALSE")
+
+rctb2$TFb<-ifelse(is.na(rctb2$T_fo18)==TRUE,"TRUE","FALSE")
+
+#rctb2$fo9b<-ifelse(rctb2$follic9>=0,"FALSE","TRUE")
+#rctb2$fo10b<-ifelse(rctb2$follic10>=0,"FALSE","TRUE")
+#rctb2$fo14b<-ifelse(rctb2$follic14>=0,"FALSE","TRUE")
+#rctb2$fo16b<-ifelse(rctb2$follic16>=0,"FALSE","TRUE")
+#rctb2$fo18b<-ifelse(rctb2$follic18>=0,"FALSE","TRUE")
+#rctb2$FSb<-ifelse(rctb2$FSH2>=0,"FALSE","TRUE")
+#rctb2$LHb<-ifelse(rctb2$LH2>=0,"FALSE","TRUE")
+#rctb2$Eb<-ifelse(rctb2$E2>=0,"FALSE","TRUE")
+#rctb2$Pb<-ifelse(rctb2$P>=0,"FALSE","TRUE")
+#rctb2$Tb<-ifelse(rctb2$T>=0,"FALSE","TRUE")
+
+
+
+con<-c("follic9","follic10","follic14","follic16","follic18",
+       "FSH2","LH2","E2","P","T","T_fo18")
+cate<-c("fo9b","fo10b","fo14b","fo16b","fo18b","FSHb","LHb","Eb","Pb","Tb","TFb")
+var<-c("follic9","fo9b","follic10","fo10b","follic14","fo14b","follic16","fo16b",
+       "follic18","fo18b","FSH2","FSb","LH2","LHb","E2","Eb","P","Pb","T","Tb","T_fo18","TFb")
+
+
+
+dr<-CreateTableOne(var,factorVars = cate,data = rctb2,strata = "groupa",includeNA =  TRUE,addOverall = TRUE)
+drr<-data.frame(print(dr,showAllLevels = TRUE))
+drr$name<-rownames(drr)
+
+
+
+d1<-subset(rctb2,period==1)
+d2<-subset(rctb2,period==2)
+d3<-subset(rctb2,period==3)
+d4<-subset(rctb2,period==4)
+d5<-subset(rctb2,period==5)
+d6<-subset(rctb2,period==6)
+d7<-subset(rctb2,period==7)
+d8<-subset(rctb2,period==8)
+d9<-subset(rctb2,period==9)
+d10<-subset(rctb2,period==10)
+d11<-subset(rctb2,period==11)
+d12<-subset(rctb2,period==12)
+d13<-subset(rctb2,period==13)
+d14<-subset(rctb2,period==14)
+d15<-subset(rctb2,period==15)
+d16<-subset(rctb2,period==16)
+d17<-subset(rctb2,period==17)
+
+
+#control=6 experi=1
+dr1<-CreateTableOne(var,factorVars = cate,data = d1,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr1r<-data.frame(print(dr1,showAllLevels = TRUE))
+dr1r$name<-rownames(dr1r)
+dr1r$data<-rep("d1",nrow(dr1r))
+
+#control=64 experi=88
+dr2<-CreateTableOne(var,factorVars = cate,data = d2,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr2r<-data.frame(print(dr2,showAllLevels = TRUE))
+dr2r$name<-rownames(dr2r)
+dr2r$data<-rep("d2",nrow(dr2r))
+
+
+#control=17 experi=13
+dr3<-CreateTableOne(var,factorVars = cate,data = d3,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr3r<-data.frame(print(dr3,showAllLevels = TRUE))
+dr3r$name<-rownames(dr3r)
+dr3r$data<-rep("d3",nrow(dr3r))
+
+
+#control=4 experi=13
+dr4<-CreateTableOne(var,factorVars = cate,data = d4,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr4r<-data.frame(print(dr4,showAllLevels = TRUE))
+dr4r$name<-rownames(dr4r)
+dr4r$data<-rep("d4",nrow(dr4r))
+
+
+#control=7 experi=32
+dr5<-CreateTableOne(var,factorVars = cate,data = d5,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr5r<-data.frame(print(dr5,showAllLevels = TRUE))
+dr5r$name<-rownames(dr5r)
+dr5r$data<-rep("d5",nrow(dr5r))
+
+
+#control=8 experi=18
+dr6<-CreateTableOne(var,factorVars = cate,data = d6,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr6r<-data.frame(print(dr6,showAllLevels = TRUE))
+dr6r$name<-rownames(dr6r)
+dr6r$data<-rep("d6",nrow(dr6r))
+
+
+#control=63 experi=84
+dr7<-CreateTableOne(var,factorVars = cate,data = d7,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr7r<-data.frame(print(dr7,showAllLevels = TRUE))
+dr7r$name<-rownames(dr7r)
+dr7r$data<-rep("d7",nrow(dr7r))
+
+
+#control=28 experi=27
+dr8<-CreateTableOne(var,factorVars = cate,data = d8,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr8r<-data.frame(print(dr8,showAllLevels = TRUE))
+dr8r$name<-rownames(dr8r)
+dr8r$data<-rep("d8",nrow(dr8r))
+
+
+#control=30 experi=38
+dr9<-CreateTableOne(var,factorVars = cate,data = d9,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr9r<-data.frame(print(dr9,showAllLevels = TRUE))
+dr9r$name<-rownames(dr9r)
+dr9r$data<-rep("d9",nrow(dr9r))
+
+
+#control=52 experi=58
+dr10<-CreateTableOne(var,factorVars = cate,data = d10,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr10r<-data.frame(print(dr10,showAllLevels = TRUE))
+dr10r$name<-rownames(dr10r)
+dr10r$data<-rep("d10",nrow(dr10r))
+
+
+#control=39 experi=50
+dr11<-CreateTableOne(var,factorVars = cate,data = d11,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr11r<-data.frame(print(dr11,showAllLevels = TRUE))
+dr11r$name<-rownames(dr11r)
+dr11r$data<-rep("d11",nrow(dr11r))
+
+
+#control=22 experi=38
+dr12<-CreateTableOne(var,factorVars = cate,data = d12,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr12r<-data.frame(print(dr12,showAllLevels = TRUE))
+dr12r$name<-rownames(dr12r)
+dr12r$data<-rep("d12",nrow(dr12r))
+
+
+#control=14 experi=24
+dr13<-CreateTableOne(var,factorVars = cate,data = d13,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr13r<-data.frame(print(dr13,showAllLevels = TRUE))
+dr13r$name<-rownames(dr13r)
+dr13r$data<-rep("d13",nrow(dr13r))
+
+
+#control=6 experi=12
+dr14<-CreateTableOne(var,factorVars = cate,data = d14,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr14r<-data.frame(print(dr14,showAllLevels = TRUE))
+dr14r$name<-rownames(dr14r)
+dr14r$data<-rep("d14",nrow(dr14r))
+
+
+#control=2 experi=10
+dr15<-CreateTableOne(var,factorVars = cate,data = d15,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr15r<-data.frame(print(dr15,showAllLevels = TRUE))
+dr15r$name<-rownames(dr15r)
+dr15r$data<-rep("d15",nrow(dr15r))
+
+
+#control=1 experi=7
+dr16<-CreateTableOne(var,factorVars = cate,data = d16,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr16r<-data.frame(print(dr16,showAllLevels = TRUE))
+dr16r$name<-rownames(dr16r)
+dr16r$data<-rep("d16",nrow(dr16r))
+
+
+#control=2 experi=4
+dr17<-CreateTableOne(var,factorVars = cate,data = d17,strata = "groupa",includeNA =  FALSE,addOverall = TRUE)
+dr17r<-data.frame(print(dr17,showAllLevels = TRUE))
+dr17r$name<-rownames(dr17r)
+dr17r$data<-rep("d17",nrow(dr17r))
+
+drt<-rbind(dr1r,dr2r,dr3r,dr4r,dr5r,dr6r,dr7r,dr8r,dr9r,dr10r,dr11r,dr12r,dr13r,dr14r,dr15r,dr16r,dr17r)
+
+View(drt)
+#write.xlsx(drt,"D:/Rdata/20230712_rct_hormone.xlsx")
+
+
+rcon<-subset(rctb2,groupa=="control")
+r1<-CreateTableOne(var,data = rcon,strata = "period",includeNA = TRUE)
+rr1<-data.frame(print(r1,showAllLevels = TRUE))
+rr1$name<-"control"
+
+rexp<-subset(rctb2,groupa=="expri")
+r2<-CreateTableOne(var,data = rexp,strata = "period",includeNA = TRUE)
+rr2<-data.frame(print(r2,showAllLevels = TRUE))
+rr2$name<-"expri"
+
+
+
+rctb2$gfsh[rctb2$groupa=="control" & rctb2$FSb=="FALSE"]<-"cFSH"
+rctb2$gfsh[rctb2$groupa=="expri" & rctb2$FSb=="FALSE"]<-"eFSH"
+xtabs(~rctb2$gfsh+rctb2$period)
+
+
+rctb2$glh[rctb2$groupa=="control" & rctb2$LHb=="FALSE"]<-"cLH"
+rctb2$glh[rctb2$groupa=="expri" & rctb2$LHb=="FALSE"]<-"eLH"
+xtabs(~rctb2$glh+rctb2$period)
+
+
+rctb2$ge[rctb2$groupa=="control" & rctb2$Eb=="FALSE"]<-"cE"
+rctb2$ge[rctb2$groupa=="expri" & rctb2$Eb=="FALSE"]<-"eE"
+xtabs(~rctb2$ge+rctb2$period)
+
+
+rctb2$gp[rctb2$groupa=="control" & rctb2$Pb=="FALSE"]<-"cP"
+rctb2$gp[rctb2$groupa=="expri" & rctb2$Pb=="FALSE"]<-"eP"
+xtabs(~rctb2$gp+rctb2$period)
+
+
+rctb2$gt[rctb2$groupa=="control" & rctb2$Tb=="FALSE"]<-"cT"
+rctb2$gt[rctb2$groupa=="expri" & rctb2$Tb=="FALSE"]<-"eT"
+xtabs(~rctb2$gt+rctb2$period)
+
+
+
+#rr<-list("rr1"=rr1,"rr2"=rr2)
+#write.xlsx(rr,"D:/Rdata/20230712_rr.xlsx")
+
+#rrt<-read.xlsx("D:/Rdata/20230712_rr.xlsx",sheet = "Sheet1")
+
+#rrt<-subset(rrt,Period>0 & Period<18)
+
+library(tableone)
+con<-c("follic9","follic10","follic14","follic16","follic18",
+       "FSH2","LH2","E2","P","T","T_fo18")
+cate<-c("fo9b","fo10b","fo14b","fo16b","fo18b","FSHb","LHb","Eb","Pb","Tb","TFb")
+var<-c("follic9","fo9b","follic10","fo10b","follic14","fo14b","follic16","fo16b",
+       "follic18","fo18b","FSH2","FSb","LH2","LHb","E2","Eb","P","Pb","T","Tb","T_fo18","TFb")
+
+
+
+dr<-CreateTableOne(var,factorVars = cate,data = rctb2,strata = "groupa",includeNA =  TRUE,addOverall = TRUE)
+drr<-data.frame(print(dr,showAllLevels = TRUE))
+drr$name<-rownames(drr)
+
+#D0-D36
+{
+
+ggplot(rrt,aes(Period,FSH2_M,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=FSH2_M-FSH2_SD,
+  #                  ymax=FSH2_M+FSH2_SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(0,37),
+                     breaks = c(0,5,10,15,20,25,30,35),
+                     labels = c("D0","D5","D10","D15","D20","D25","D30","D35"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='FSH')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.12,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(rrt,aes(Period,LH2_M,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=LH2_M-LH2_SD,
+  #                  ymax=LH2_M+LH2_SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(0,37),
+                     breaks = c(0,5,10,15,20,25,30,35),
+                     labels = c("D0","D5","D10","D15","D20","D25","D30","D35"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='LH')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.12,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(rrt,aes(Period,E2_M,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=E2_M-E2_SD,
+  #                  ymax=E2_M+E2_SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(0,37),
+                     breaks = c(0,5,10,15,20,25,30,35),
+                     labels = c("D0","D5","D10","D15","D20","D25","D30","D35"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='E2')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.12,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(rrt,aes(Period,T_M,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=T_M-T_SD,
+  #                  ymax=T_M+T_SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+  
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(0,37),
+                     breaks = c(0,5,10,15,20,25,30,35),
+                     labels = c("D0","D5","D10","D15","D20","D25","D30","D35"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='T')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.12,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+
+
+ggplot(rrt,aes(Period,P_M,group=group,color=group,shape=group))+
+  geom_point(size=3)+
+  geom_line(position = position_dodge(0.1),cex=1)+
+  #geom_errorbar(aes(ymin=P_M-P_SD,
+  #                  ymax=P_M+P_SD),
+  #              width=0.3,cex=1)+
+  scale_color_manual(values = c('red','blue'))+
+  scale_shape_manual(values = c(16,15))+
+  scale_x_continuous(limits=c(0,37),
+                     breaks = c(0,5,10,15,20,25,30,35),
+                     labels = c("D0","D5","D10","D15","D20","D25","D30","D35"))+
+  theme_bw(base_size =15)+
+  theme(panel.grid=element_blank())+
+  labs(x='Period',y='P')+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(family = 'serif'),
+        legend.position = c(0.12,0.95),
+        legend.direction = "horizontal",
+        axis.text = element_text(color = 'black',family = 'serif'),
+        axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+
+}
+
+
+
+#D0-D18
+{
+  
+  ggplot(rrt,aes(Period,FSH2_M,group=group,color=group,shape=group))+
+    geom_point(size=3)+
+    geom_line(position = position_dodge(0.1),cex=1)+
+    #geom_errorbar(aes(ymin=FSH2_M-FSH2_SD,
+    #                  ymax=FSH2_M+FSH2_SD),
+    #              width=0.3,cex=1)+
+    scale_color_manual(values = c('red','blue'))+  
+    scale_shape_manual(values = c(16,15))+
+    scale_x_continuous(limits=c(0,18),
+                       breaks = c(0,5,10,15),
+                       labels = c("D0","D5","D10","D15"))+
+    theme_bw(base_size =15)+
+    theme(panel.grid=element_blank())+
+    labs(x='Period',y='FSH')+
+    theme(legend.title = element_blank(),
+          legend.text = element_text(family = 'serif'),
+          legend.position = c(0.15,0.940),
+          legend.direction = "horizontal",
+          axis.text = element_text(color = 'black',family = 'serif'),
+          axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+  
+  
+  
+  ggplot(rrt,aes(Period,LH2_M,group=group,color=group,shape=group))+
+    geom_point(size=3)+
+    geom_line(position = position_dodge(0.1),cex=1)+
+    #geom_errorbar(aes(ymin=LH2_M-LH2_SD,
+    #                  ymax=LH2_M+LH2_SD),
+    #              width=0.3,cex=1)+
+    scale_color_manual(values = c('red','blue'))+  
+    scale_shape_manual(values = c(16,15))+
+    scale_x_continuous(limits=c(0,18),
+                       breaks = c(0,5,10,15),
+                       labels = c("D0","D5","D10","D15"))+
+    theme_bw(base_size =15)+
+    theme(panel.grid=element_blank())+
+    labs(x='Period',y='LH')+
+    theme(legend.title = element_blank(),
+          legend.text = element_text(family = 'serif'),
+          legend.position = c(0.15,0.940),
+          legend.direction = "horizontal",
+          axis.text = element_text(color = 'black',family = 'serif'),
+          axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+  
+  
+  
+  ggplot(rrt,aes(Period,E2_M,group=group,color=group,shape=group))+
+    geom_point(size=3)+
+    geom_line(position = position_dodge(0.1),cex=1)+
+    #geom_errorbar(aes(ymin=E2_M-E2_SD,
+    #                  ymax=E2_M+E2_SD),
+    #              width=0.3,cex=1)+
+    scale_color_manual(values = c('red','blue'))+  
+    scale_shape_manual(values = c(16,15))+
+    scale_x_continuous(limits=c(0,18),
+                       breaks = c(0,5,10,15),
+                       labels = c("D0","D5","D10","D15"))+
+    theme_bw(base_size =15)+
+    theme(panel.grid=element_blank())+
+    labs(x='Period',y='E2')+
+    theme(legend.title = element_blank(),
+          legend.text = element_text(family = 'serif'),
+          legend.position = c(0.15,0.940),
+          legend.direction = "horizontal",
+          axis.text = element_text(color = 'black',family = 'serif'),
+          axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+  
+  
+  
+  
+  rrtT<-subset(rrt,Period==2 | Period==3 | Period==7 | Period==8 | Period==9 | Period==10 | Period==11 | Period==12 | Period==13)
+  ggplot(rrtT,aes(Period,T_M,group=group,color=group,shape=group))+
+    geom_point(size=3)+
+    geom_line(position = position_dodge(0.1),cex=1)+
+    geom_errorbar(aes(ymin=T_M-T_SD,
+                      ymax=T_M+T_SD),
+                  width=0.3,cex=1)+
+    scale_color_manual(values = c('red','blue'))+  
+    scale_shape_manual(values = c(16,15))+
+    scale_x_continuous(limits=c(0,14),
+                       breaks = c(0,2,4,6,8,10,12,14),
+                       labels = c("D0","D2","D4","D6","D8","D10","D12","D14"))+
+    theme_bw(base_size =15)+
+    theme(panel.grid=element_blank())+
+    labs(x='Period',y='T')+
+    theme(legend.title = element_blank(),
+          legend.text = element_text(family = 'serif'),
+          legend.position = c(0.15,0.940),
+          legend.direction = "horizontal",
+          axis.text = element_text(color = 'black',family = 'serif'),
+          axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+  
+  
+  
+  ggplot(rrt,aes(Period,P_M,group=group,color=group,shape=group))+
+    geom_point(size=3)+
+    geom_line(position = position_dodge(0.1),cex=1)+
+    #geom_errorbar(aes(ymin=P_M-P_SD,
+    #                  ymax=P_M+P_SD),
+    #              width=0.3,cex=1)+
+    scale_color_manual(values = c('red','blue'))+
+    scale_shape_manual(values = c(16,15))+
+    scale_x_continuous(limits=c(0,18),
+                       breaks = c(0,5,10,15),
+                       labels = c("D0","D5","D10","D15"))+
+    theme_bw(base_size =15)+
+    theme(panel.grid=element_blank())+
+    labs(x='Period',y='P')+
+    theme(legend.title = element_blank(),
+          legend.text = element_text(family = 'serif'),
+          legend.position = c(0.15,0.940),
+          legend.direction = "horizontal",
+          axis.text = element_text(color = 'black',family = 'serif'),
+          axis.title = element_text(family = 'serif',size = 15,color = 'black'))
+  
+}
+
+
+```
+
+
+
+
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
